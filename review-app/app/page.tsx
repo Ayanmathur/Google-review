@@ -16,13 +16,21 @@ export default function Home() {
               ReviewFlow
             </span>
           </div>
-          <Link
-            href="/admin"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-900 hover:bg-gray-800 border border-gray-800 text-sm font-medium text-white transition-all duration-200"
-          >
-            Admin Panel
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-900/60 hover:bg-gray-800 border border-gray-800 text-sm font-medium text-gray-300 hover:text-white transition-all duration-200"
+            >
+              Client Login
+            </Link>
+            <Link
+              href="/admin"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-900 hover:bg-gray-800 border border-gray-800 text-sm font-medium text-white transition-all duration-200"
+            >
+              Admin Panel
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </header>
 

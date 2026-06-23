@@ -24,7 +24,25 @@ import {
   Trash2,
   X,
   Save,
+  KeyRound,
+  ShieldCheck,
+  ShieldX,
+  RefreshCw,
+  User,
+  Lock as LockIcon,
+  Calendar,
 } from "lucide-react";
+
+// ─── License Key Generator ───
+function generateLicenseKey() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const seg = () =>
+    Array.from(
+      { length: 4 },
+      () => chars[Math.floor(Math.random() * chars.length)]
+    ).join("");
+  return `RVW-${seg()}-${seg()}-${seg()}`;
+}
 
 // ─── Types ───
 
@@ -35,6 +53,12 @@ interface Client {
   business_type: string;
   google_place_id: string;
   created_at: string;
+  license_key: string;
+  is_active: boolean;
+  expires_at: string | null;
+  client_username: string | null;
+  client_password: string | null;
+  is_activated: boolean;
 }
 
 interface ScanStats {
@@ -271,6 +295,8 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [generatedKey, setGeneratedKey] = useState("");
+  const [keyCopied, setKeyCopied] = useState(false);
 
   const generateSlug = (value: string) => {
     return value
@@ -291,29 +317,47 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
     setError("");
     setSubmitting(true);
 
+    const licenseKey = generateLicenseKey();
+
     const { error: insertError } = await supabase.from("clients").insert({
       name,
       slug,
       business_type: businessType,
       google_place_id: googlePlaceId,
+      license_key: licenseKey,
+      is_active: true,
+      is_activated: false,
     });
 
     if (insertError) {
       setError(insertError.message);
     } else {
       setSuccess(true);
+      setGeneratedKey(licenseKey);
       setName("");
       setSlug("");
       setBusinessType("");
       setGooglePlaceId("");
       onClientAdded();
-      setTimeout(() => {
-        setSuccess(false);
-        setOpen(false);
-      }, 1500);
     }
 
     setSubmitting(false);
+  };
+
+  const handleCopyKey = async () => {
+    try {
+      await navigator.clipboard.writeText(generatedKey);
+      setKeyCopied(true);
+      setTimeout(() => setKeyCopied(false), 2000);
+    } catch {
+      // Clipboard may not be available
+    }
+  };
+
+  const handleDone = () => {
+    setSuccess(false);
+    setGeneratedKey("");
+    setOpen(false);
   };
 
   return (
@@ -334,89 +378,130 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
       </button>
 
       {open && (
-        <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-4">
+        <div className="px-6 pb-6 space-y-4">
           <div className="h-px bg-gray-800" />
 
-          <Field label="Business Name">
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => handleNameChange(e.target.value)}
-              required
-              placeholder="e.g. Joe's Barbershop"
-              className="form-input"
-            />
-          </Field>
+          {success && generatedKey ? (
+            // Show generated license key after creation
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-emerald-400 text-sm">
+                <CheckCircle2 className="w-4 h-4" />
+                Client added successfully!
+              </div>
 
-          <Field label="Slug">
-            <input
-              type="text"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              required
-              placeholder="joes-barbershop"
-              className="form-input font-mono text-xs"
-            />
-          </Field>
+              <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4 space-y-3">
+                <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">
+                  License Key — Share this with the client
+                </p>
+                <div className="flex items-center gap-3">
+                  <code className="flex-grow text-lg font-mono text-amber-400 tracking-wider">
+                    {generatedKey}
+                  </code>
+                  <button
+                    onClick={handleCopyKey}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-700 hover:bg-gray-600
+                               text-gray-300 text-xs font-medium transition-colors"
+                  >
+                    {keyCopied ? (
+                      <>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-400">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        Copy
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
 
-          <Field label="Business Type">
-            <input
-              type="text"
-              value={businessType}
-              onChange={(e) => setBusinessType(e.target.value)}
-              required
-              placeholder="e.g. Restaurant, Salon, Clinic"
-              className="form-input"
-            />
-          </Field>
-
-          <Field label="Google Place ID">
-            <input
-              type="text"
-              value={googlePlaceId}
-              onChange={(e) => setGooglePlaceId(e.target.value)}
-              required
-              placeholder="ChIJ..."
-              className="form-input font-mono text-xs"
-            />
-            <a
-              href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 mt-1.5 text-xs text-blue-400 hover:text-blue-300 transition-colors"
-            >
-              Find my Place ID
-              <ExternalLink className="w-3 h-3" />
-            </a>
-          </Field>
-
-          {error && (
-            <div className="flex items-center gap-2 text-red-400 text-sm">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              {error}
+              <button
+                onClick={handleDone}
+                className="w-full py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-medium
+                           text-sm transition-all"
+              >
+                Done
+              </button>
             </div>
-          )}
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Field label="Business Name">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => handleNameChange(e.target.value)}
+                  required
+                  placeholder="e.g. Joe's Barbershop"
+                  className="form-input"
+                />
+              </Field>
 
-          {success && (
-            <div className="flex items-center gap-2 text-emerald-400 text-sm">
-              <CheckCircle2 className="w-4 h-4" />
-              Client added successfully!
-            </div>
-          )}
+              <Field label="Slug">
+                <input
+                  type="text"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  required
+                  placeholder="joes-barbershop"
+                  className="form-input font-mono text-xs"
+                />
+              </Field>
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium
-                       text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {submitting ? (
-              <Loader2 className="w-4 h-4 animate-spin mx-auto" />
-            ) : (
-              "Add Client"
-            )}
-          </button>
-        </form>
+              <Field label="Business Type">
+                <input
+                  type="text"
+                  value={businessType}
+                  onChange={(e) => setBusinessType(e.target.value)}
+                  required
+                  placeholder="e.g. Restaurant, Salon, Clinic"
+                  className="form-input"
+                />
+              </Field>
+
+              <Field label="Google Place ID">
+                <input
+                  type="text"
+                  value={googlePlaceId}
+                  onChange={(e) => setGooglePlaceId(e.target.value)}
+                  required
+                  placeholder="ChIJ..."
+                  className="form-input font-mono text-xs"
+                />
+                <a
+                  href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 mt-1.5 text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  Find my Place ID
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </Field>
+
+              {error && (
+                <div className="flex items-center gap-2 text-red-400 text-sm">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium
+                           text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {submitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                ) : (
+                  "Add Client"
+                )}
+              </button>
+            </form>
+          )}
+        </div>
       )}
     </div>
   );
@@ -455,6 +540,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
   const [feedback, setFeedback] = useState<NegativeReview[]>([]);
   const [feedbackLoaded, setFeedbackLoaded] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [keyCopied, setKeyCopied] = useState(false);
   const qrRef = useRef<HTMLDivElement>(null);
 
   // ─── Edit State ───
@@ -468,10 +554,32 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
+  // ─── License Management State ───
+  const [revoking, setRevoking] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
+  const [newKeyShown, setNewKeyShown] = useState("");
+  const [expiryDate, setExpiryDate] = useState(
+    client.expires_at ? client.expires_at.split("T")[0] : ""
+  );
+  const [updatingExpiry, setUpdatingExpiry] = useState(false);
+
   const reviewUrl =
     typeof window !== "undefined"
       ? `https://${window.location.host}/review/${client.slug}`
       : `/review/${client.slug}`;
+
+  // Compute status
+  const getStatus = (): { label: string; color: string; bgColor: string } => {
+    if (!client.is_active) {
+      return { label: "Revoked", color: "text-red-400", bgColor: "bg-red-500/10 border-red-500/20" };
+    }
+    if (client.expires_at && new Date(client.expires_at) < new Date()) {
+      return { label: "Expired", color: "text-amber-400", bgColor: "bg-amber-500/10 border-amber-500/20" };
+    }
+    return { label: "Active", color: "text-emerald-400", bgColor: "bg-emerald-500/10 border-emerald-500/20" };
+  };
+
+  const status = getStatus();
 
   // Fetch stats
   useEffect(() => {
@@ -516,6 +624,16 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
       await navigator.clipboard.writeText(reviewUrl);
       setLinkCopied(true);
       setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      // Clipboard may not be available
+    }
+  };
+
+  const handleCopyKey = async () => {
+    try {
+      await navigator.clipboard.writeText(client.license_key);
+      setKeyCopied(true);
+      setTimeout(() => setKeyCopied(false), 2000);
     } catch {
       // Clipboard may not be available
     }
@@ -586,9 +704,57 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
     }
   };
 
+  // ─── License Management ───
+
+  const handleToggleRevoke = async () => {
+    setRevoking(true);
+    const { error } = await supabase
+      .from("clients")
+      .update({ is_active: !client.is_active })
+      .eq("id", client.id);
+
+    if (!error) {
+      onClientUpdated();
+    }
+    setRevoking(false);
+  };
+
+  const handleRegenerateKey = async () => {
+    setRegenerating(true);
+    const newKey = generateLicenseKey();
+
+    const { error } = await supabase
+      .from("clients")
+      .update({ license_key: newKey, is_activated: false, client_username: null, client_password: null })
+      .eq("id", client.id);
+
+    if (!error) {
+      setNewKeyShown(newKey);
+      onClientUpdated();
+    }
+    setRegenerating(false);
+  };
+
+  const handleUpdateExpiry = async (dateStr: string) => {
+    setExpiryDate(dateStr);
+    setUpdatingExpiry(true);
+
+    const expiresAt = dateStr ? new Date(dateStr + "T23:59:59Z").toISOString() : null;
+
+    const { error } = await supabase
+      .from("clients")
+      .update({ expires_at: expiresAt })
+      .eq("id", client.id);
+
+    if (!error) {
+      onClientUpdated();
+    }
+    setUpdatingExpiry(false);
+  };
+
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4">
-      {/* Header */}
+      {/* Header with Status Badge */}
       <div className="flex items-start justify-between gap-4">
         {editing ? (
           <div className="flex-grow space-y-3">
@@ -658,8 +824,15 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
           </div>
         ) : (
           <>
-            <div>
-              <h3 className="text-base font-semibold text-white">{client.name}</h3>
+            <div className="flex-grow">
+              <div className="flex items-center gap-2.5 mb-1">
+                <h3 className="text-base font-semibold text-white">{client.name}</h3>
+                <span
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider border ${status.bgColor} ${status.color}`}
+                >
+                  {status.label}
+                </span>
+              </div>
               <p className="text-xs text-gray-500 font-mono mt-0.5">
                 /{client.slug}
               </p>
@@ -675,6 +848,122 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
             </div>
           </>
         )}
+      </div>
+
+      {/* License Key Section */}
+      <div className="bg-gray-800/40 border border-gray-700/50 rounded-xl p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <KeyRound className="w-4 h-4 text-amber-400" />
+          <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+            License Key
+          </span>
+          {!client.is_activated && (
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 font-medium">
+              Not Activated
+            </span>
+          )}
+          {client.is_activated && (
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium">
+              Activated
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <code className="flex-grow text-sm font-mono text-amber-300 tracking-wider bg-gray-900/60 rounded-lg px-3 py-2">
+            {newKeyShown || client.license_key}
+          </code>
+          <button
+            onClick={handleCopyKey}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-700 hover:bg-gray-600
+                       text-gray-300 text-xs font-medium transition-colors flex-shrink-0"
+          >
+            {keyCopied ? (
+              <>
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-emerald-400">Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5" />
+                Copy Key
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Client Credentials (visible to admin) */}
+        {client.is_activated && client.client_username && (
+          <div className="bg-gray-900/60 rounded-lg px-3 py-2.5 space-y-1.5 border border-gray-700/30">
+            <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+              Client Credentials
+            </p>
+            <div className="flex items-center gap-4 text-xs">
+              <span className="flex items-center gap-1.5 text-gray-400">
+                <User className="w-3 h-3 text-gray-500" />
+                <span className="font-mono text-gray-300">{client.client_username}</span>
+              </span>
+              <span className="flex items-center gap-1.5 text-gray-400">
+                <LockIcon className="w-3 h-3 text-gray-500" />
+                <span className="font-mono text-gray-300">{client.client_password}</span>
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* License Management Actions */}
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          {/* Expiry Date */}
+          <div className="flex items-center gap-2">
+            <Calendar className="w-3.5 h-3.5 text-gray-500" />
+            <input
+              type="date"
+              value={expiryDate}
+              onChange={(e) => handleUpdateExpiry(e.target.value)}
+              className="px-2 py-1.5 rounded-lg bg-gray-900/60 border border-gray-700/50 text-gray-300 text-xs
+                         focus:outline-none focus:ring-1 focus:ring-blue-500/40 transition-all
+                         [color-scheme:dark]"
+            />
+            {updatingExpiry && <Loader2 className="w-3 h-3 animate-spin text-gray-500" />}
+          </div>
+
+          <div className="flex-grow" />
+
+          {/* Revoke / Reactivate */}
+          <button
+            onClick={handleToggleRevoke}
+            disabled={revoking}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-40 ${
+              client.is_active
+                ? "bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20"
+                : "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20"
+            }`}
+          >
+            {revoking ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : client.is_active ? (
+              <ShieldX className="w-3.5 h-3.5" />
+            ) : (
+              <ShieldCheck className="w-3.5 h-3.5" />
+            )}
+            {client.is_active ? "Revoke" : "Reactivate"}
+          </button>
+
+          {/* Regenerate Key */}
+          <button
+            onClick={handleRegenerateKey}
+            disabled={regenerating}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-700/50 border border-gray-600/50
+                       text-gray-300 hover:bg-gray-600/50 text-xs font-medium transition-colors disabled:opacity-40"
+          >
+            {regenerating ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <RefreshCw className="w-3.5 h-3.5" />
+            )}
+            Regenerate
+          </button>
+        </div>
       </div>
 
       {/* Action Buttons */}
