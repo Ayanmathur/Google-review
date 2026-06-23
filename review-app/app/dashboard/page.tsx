@@ -90,7 +90,7 @@ export default function DashboardPage() {
     localStorage.removeItem("client_id");
     localStorage.removeItem("client_name");
     localStorage.removeItem("client_slug");
-    router.push("/login");
+    router.push("/");
   };
 
   const handleDownloadQR = () => {

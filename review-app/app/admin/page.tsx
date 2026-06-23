@@ -3,6 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { QRCodeCanvas } from "qrcode.react";
 import {
@@ -82,6 +83,8 @@ export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
+  const router = useRouter();
+
   useEffect(() => {
     const stored = sessionStorage.getItem(AUTH_KEY);
     if (stored === "true") {
@@ -119,6 +122,7 @@ export default function AdminPage() {
         onLogout={() => {
           sessionStorage.removeItem(AUTH_KEY);
           setAuthenticated(false);
+          router.push("/");
         }}
       />
     </PageShell>
