@@ -43,7 +43,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-200 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-200 flex items-center justify-center px-4">
       {/* Background Glows */}
       <div className="absolute top-[-10%] left-[-20%] w-[500px] h-[500px] rounded-full bg-blue-900/10 blur-[150px] pointer-events-none" />
       <div className="absolute bottom-[10%] right-[-10%] w-[400px] h-[400px] rounded-full bg-indigo-900/10 blur-[120px] pointer-events-none" />
@@ -51,15 +51,15 @@ export default function LoginPage() {
       <div className="w-full max-w-sm space-y-6 relative z-10">
         <form
           onSubmit={handleSubmit}
-          className="w-full space-y-5 bg-gray-900/80 border border-gray-800 rounded-2xl p-8 backdrop-blur-sm"
+          className="w-full space-y-5 bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 backdrop-blur-sm"
         >
           <div className="flex flex-col items-center gap-3">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/20 flex items-center justify-center">
               <Lock className="w-6 h-6 text-blue-400" />
             </div>
             <div className="text-center">
-              <h1 className="text-xl font-bold text-white">Client Login</h1>
-              <p className="text-xs text-gray-500 mt-1">
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Client Login</h1>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                 Sign in to access your dashboard
               </p>
             </div>
@@ -67,7 +67,7 @@ export default function LoginPage() {
 
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                 Username
               </label>
               <input
@@ -77,14 +77,14 @@ export default function LoginPage() {
                 placeholder="Enter your username"
                 autoFocus
                 required
-                className="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-gray-200
+                className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                            placeholder-gray-500 text-sm focus:outline-none focus:ring-2
                            focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                 Password
               </label>
               <input
@@ -93,7 +93,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 required
-                className="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-gray-200
+                className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                            placeholder-gray-500 text-sm focus:outline-none focus:ring-2
                            focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
               />
@@ -110,7 +110,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading || !username || !password}
-            className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold
+            className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white font-semibold
                        text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed
                        shadow-[0_0_20px_rgba(37,99,235,0.15)] hover:shadow-[0_0_25px_rgba(37,99,235,0.3)]"
           >
@@ -125,8 +125,8 @@ export default function LoginPage() {
         {/* Activate Link */}
         <Link
           href="/activate"
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gray-900/60 border border-gray-800
-                     hover:bg-gray-800/60 hover:border-gray-700 text-gray-400 hover:text-gray-200 text-sm font-medium
+          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800
+                     hover:bg-gray-100 dark:hover:bg-gray-800/60 hover:border-gray-300 dark:hover:border-gray-700 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 text-sm font-medium
                      transition-all backdrop-blur-sm"
         >
           <KeyRound className="w-4 h-4" />

@@ -32,6 +32,7 @@ import {
   Lock as LockIcon,
   Calendar,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 // ─── License Key Generator ───
 function generateLicenseKey() {
@@ -93,7 +94,7 @@ export default function AdminPage() {
     return (
       <PageShell>
         <div className="flex items-center justify-center min-h-screen">
-          <Loader2 className="w-6 h-6 animate-spin text-gray-500" />
+          <Loader2 className="w-6 h-6 animate-spin text-gray-500 dark:text-gray-500" />
         </div>
       </PageShell>
     );
@@ -130,7 +131,7 @@ export default function AdminPage() {
 
 function PageShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-200">{children}</div>
+    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-200">{children}</div>
   );
 }
 
@@ -174,13 +175,13 @@ function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
     <div className="flex items-center justify-center min-h-screen px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-5 bg-gray-900 border border-gray-800 rounded-2xl p-8"
+        className="w-full max-w-sm space-y-5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8"
       >
         <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center">
-            <Lock className="w-5 h-5 text-gray-400" />
+          <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+            <Lock className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </div>
-          <h1 className="text-lg font-semibold text-white">Admin Access</h1>
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Admin Access</h1>
         </div>
 
         <input
@@ -189,7 +190,7 @@ function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Enter password"
           autoFocus
-          className="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-gray-200
+          className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                      placeholder-gray-500 text-sm focus:outline-none focus:ring-2
                      focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
         />
@@ -204,7 +205,7 @@ function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
         <button
           type="submit"
           disabled={loading || !password}
-          className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium
+          className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white font-medium
                      text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {loading ? (
@@ -244,14 +245,17 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
-        <button
-          onClick={onLogout}
-          className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-300 transition-colors"
-        >
-          <LogOut className="w-4 h-4" />
-          Logout
-        </button>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <button
+            onClick={onLogout}
+            className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Add Client Form */}
@@ -259,8 +263,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
       {/* Clients List */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-300 flex items-center gap-2">
-          <Eye className="w-5 h-5 text-gray-500" />
+        <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+          <Eye className="w-5 h-5 text-gray-500 dark:text-gray-500" />
           Clients ({clients.length})
         </h2>
 
@@ -361,25 +365,25 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
   };
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-800/50 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors"
       >
-        <span className="flex items-center gap-2 font-medium text-white">
+        <span className="flex items-center gap-2 font-medium text-gray-900 dark:text-white">
           <Plus className="w-5 h-5 text-blue-500" />
           Add New Client
         </span>
         {open ? (
-          <ChevronUp className="w-5 h-5 text-gray-500" />
+          <ChevronUp className="w-5 h-5 text-gray-500 dark:text-gray-500" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-gray-500" />
+          <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-500" />
         )}
       </button>
 
       {open && (
         <div className="px-6 pb-6 space-y-4">
-          <div className="h-px bg-gray-800" />
+          <div className="h-px bg-gray-100 dark:bg-gray-800" />
 
           {success && generatedKey ? (
             // Show generated license key after creation
@@ -389,8 +393,8 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
                 Client added successfully!
               </div>
 
-              <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4 space-y-3">
-                <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">
+              <div className="bg-gray-100 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-xl p-4 space-y-3">
+                <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider font-medium">
                   License Key — Share this with the client
                 </p>
                 <div className="flex items-center gap-3">
@@ -399,8 +403,8 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
                   </code>
                   <button
                     onClick={handleCopyKey}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-700 hover:bg-gray-600
-                               text-gray-300 text-xs font-medium transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600
+                               text-gray-700 dark:text-gray-300 text-xs font-medium transition-colors"
                   >
                     {keyCopied ? (
                       <>
@@ -419,7 +423,7 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
 
               <button
                 onClick={handleDone}
-                className="w-full py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-medium
+                className="w-full py-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium
                            text-sm transition-all"
               >
                 Done
@@ -490,7 +494,7 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium
+                className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white font-medium
                            text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {submitting ? (
@@ -518,7 +522,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">
+      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
         {label}
       </label>
       {children}
@@ -753,7 +757,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
   };
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4">
+    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 space-y-4">
       {/* Header with Status Badge */}
       <div className="flex items-start justify-between gap-4">
         {editing ? (
@@ -803,7 +807,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
                 onClick={handleSaveEdit}
                 disabled={saving || !editName || !editSlug || !editBusinessType || !editGooglePlaceId}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500
-                           text-white text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                           text-gray-900 dark:text-white text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {saving ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -814,8 +818,8 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
               </button>
               <button
                 onClick={handleCancelEdit}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700
-                           text-gray-300 text-xs font-medium transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700
+                           text-gray-700 dark:text-gray-300 text-xs font-medium transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
                 Cancel
@@ -826,14 +830,14 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
           <>
             <div className="flex-grow">
               <div className="flex items-center gap-2.5 mb-1">
-                <h3 className="text-base font-semibold text-white">{client.name}</h3>
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">{client.name}</h3>
                 <span
                   className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider border ${status.bgColor} ${status.color}`}
                 >
                   {status.label}
                 </span>
               </div>
-              <p className="text-xs text-gray-500 font-mono mt-0.5">
+              <p className="text-xs text-gray-500 dark:text-gray-500 font-mono mt-0.5">
                 /{client.slug}
               </p>
               <p className="text-xs text-gray-600 mt-0.5">{client.business_type}</p>
@@ -851,10 +855,10 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
       </div>
 
       {/* License Key Section */}
-      <div className="bg-gray-800/40 border border-gray-700/50 rounded-xl p-4 space-y-3">
+      <div className="bg-gray-100 dark:bg-gray-800/40 border border-gray-300 dark:border-gray-700/50 rounded-xl p-4 space-y-3">
         <div className="flex items-center gap-2">
           <KeyRound className="w-4 h-4 text-amber-400" />
-          <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+          <span className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
             License Key
           </span>
           {!client.is_activated && (
@@ -870,13 +874,13 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
         </div>
 
         <div className="flex items-center gap-3">
-          <code className="flex-grow text-sm font-mono text-amber-300 tracking-wider bg-gray-900/60 rounded-lg px-3 py-2">
+          <code className="flex-grow text-sm font-mono text-amber-300 tracking-wider bg-gray-50 dark:bg-gray-900/60 rounded-lg px-3 py-2">
             {newKeyShown || client.license_key}
           </code>
           <button
             onClick={handleCopyKey}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-700 hover:bg-gray-600
-                       text-gray-300 text-xs font-medium transition-colors flex-shrink-0"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600
+                       text-gray-700 dark:text-gray-300 text-xs font-medium transition-colors flex-shrink-0"
           >
             {keyCopied ? (
               <>
@@ -894,18 +898,18 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
 
         {/* Client Credentials (visible to admin) */}
         {client.is_activated && client.client_username && (
-          <div className="bg-gray-900/60 rounded-lg px-3 py-2.5 space-y-1.5 border border-gray-700/30">
-            <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+          <div className="bg-gray-50 dark:bg-gray-900/60 rounded-lg px-3 py-2.5 space-y-1.5 border border-gray-300 dark:border-gray-700/30">
+            <p className="text-[10px] font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider">
               Client Credentials
             </p>
             <div className="flex items-center gap-4 text-xs">
-              <span className="flex items-center gap-1.5 text-gray-400">
-                <User className="w-3 h-3 text-gray-500" />
-                <span className="font-mono text-gray-300">{client.client_username}</span>
+              <span className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
+                <User className="w-3 h-3 text-gray-500 dark:text-gray-500" />
+                <span className="font-mono text-gray-700 dark:text-gray-300">{client.client_username}</span>
               </span>
-              <span className="flex items-center gap-1.5 text-gray-400">
-                <LockIcon className="w-3 h-3 text-gray-500" />
-                <span className="font-mono text-gray-300">{client.client_password}</span>
+              <span className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
+                <LockIcon className="w-3 h-3 text-gray-500 dark:text-gray-500" />
+                <span className="font-mono text-gray-700 dark:text-gray-300">{client.client_password}</span>
               </span>
             </div>
           </div>
@@ -915,16 +919,16 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
         <div className="flex flex-wrap items-center gap-2 pt-1">
           {/* Expiry Date */}
           <div className="flex items-center gap-2">
-            <Calendar className="w-3.5 h-3.5 text-gray-500" />
+            <Calendar className="w-3.5 h-3.5 text-gray-500 dark:text-gray-500" />
             <input
               type="date"
               value={expiryDate}
               onChange={(e) => handleUpdateExpiry(e.target.value)}
-              className="px-2 py-1.5 rounded-lg bg-gray-900/60 border border-gray-700/50 text-gray-300 text-xs
+              className="px-2 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-900/60 border border-gray-300 dark:border-gray-700/50 text-gray-700 dark:text-gray-300 text-xs
                          focus:outline-none focus:ring-1 focus:ring-blue-500/40 transition-all
                          [color-scheme:dark]"
             />
-            {updatingExpiry && <Loader2 className="w-3 h-3 animate-spin text-gray-500" />}
+            {updatingExpiry && <Loader2 className="w-3 h-3 animate-spin text-gray-500 dark:text-gray-500" />}
           </div>
 
           <div className="flex-grow" />
@@ -953,8 +957,8 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
           <button
             onClick={handleRegenerateKey}
             disabled={regenerating}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-700/50 border border-gray-600/50
-                       text-gray-300 hover:bg-gray-600/50 text-xs font-medium transition-colors disabled:opacity-40"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-700/50 border border-gray-600/50
+                       text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600/50 text-xs font-medium transition-colors disabled:opacity-40"
           >
             {regenerating ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -970,16 +974,16 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
       <div className="flex gap-2 flex-wrap">
         <button
           onClick={handleDownloadQR}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700
-                     text-gray-300 text-xs font-medium transition-colors"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700
+                     text-gray-700 dark:text-gray-300 text-xs font-medium transition-colors"
         >
           <Download className="w-3.5 h-3.5" />
           Download QR
         </button>
         <button
           onClick={handleCopyLink}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700
-                     text-gray-300 text-xs font-medium transition-colors"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700
+                     text-gray-700 dark:text-gray-300 text-xs font-medium transition-colors"
         >
           {linkCopied ? (
             <>
@@ -997,8 +1001,8 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
           <>
             <button
               onClick={handleStartEdit}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700
-                         text-gray-300 text-xs font-medium transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700
+                         text-gray-700 dark:text-gray-300 text-xs font-medium transition-colors"
             >
               <Pencil className="w-3.5 h-3.5" />
               Edit
@@ -1009,7 +1013,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
                   onClick={handleDelete}
                   disabled={deleting}
                   className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500
-                             text-white text-xs font-medium transition-colors disabled:opacity-40"
+                             text-gray-900 dark:text-white text-xs font-medium transition-colors disabled:opacity-40"
                 >
                   {deleting ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1020,8 +1024,8 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
                 </button>
                 <button
                   onClick={() => setConfirmDelete(false)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700
-                             text-gray-300 text-xs font-medium transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700
+                             text-gray-700 dark:text-gray-300 text-xs font-medium transition-colors"
                 >
                   <X className="w-3.5 h-3.5" />
                   Cancel
@@ -1030,8 +1034,8 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
             ) : (
               <button
                 onClick={() => setConfirmDelete(true)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-800 hover:bg-red-900/50
-                           text-gray-500 hover:text-red-400 text-xs font-medium transition-colors"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-red-900/50
+                           text-gray-500 dark:text-gray-500 hover:text-red-400 text-xs font-medium transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 Delete
@@ -1047,7 +1051,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
           icon={<Eye className="w-3.5 h-3.5" />}
           label="Total scans"
           value={stats.total}
-          color="text-gray-400"
+          color="text-gray-600 dark:text-gray-400"
         />
         <StatBadge
           icon={<Star className="w-3.5 h-3.5" />}
@@ -1066,7 +1070,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
       {/* Feedback Toggle */}
       <button
         onClick={toggleFeedback}
-        className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-300 transition-colors w-full"
+        className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors w-full"
       >
         <MessageSquare className="w-3.5 h-3.5" />
         {feedbackOpen ? "Hide feedback" : "View feedback"}
@@ -1088,7 +1092,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
             feedback.map((review) => (
               <div
                 key={review.id}
-                className="bg-gray-800/50 rounded-xl px-4 py-3 space-y-1.5"
+                className="bg-gray-100 dark:bg-gray-800/50 rounded-xl px-4 py-3 space-y-1.5"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
@@ -1111,7 +1115,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
                     })}
                   </span>
                 </div>
-                <p className="text-xs text-gray-400 leading-relaxed">
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                   {review.feedback || (
                     <span className="italic text-gray-600">
                       No feedback provided
@@ -1141,7 +1145,7 @@ function StatBadge({
   color: string;
 }) {
   return (
-    <div className="flex-1 bg-gray-800/50 rounded-xl px-3 py-2.5 text-center space-y-1">
+    <div className="flex-1 bg-gray-100 dark:bg-gray-800/50 rounded-xl px-3 py-2.5 text-center space-y-1">
       <div className={`flex items-center justify-center gap-1.5 ${color}`}>
         {icon}
         <span className="text-base font-semibold">{value}</span>

@@ -108,7 +108,7 @@ export default function ActivatePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-200 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-200 flex items-center justify-center px-4">
       {/* Background Glows */}
       <div className="absolute top-[-10%] left-[-20%] w-[500px] h-[500px] rounded-full bg-indigo-900/10 blur-[150px] pointer-events-none" />
       <div className="absolute bottom-[10%] right-[-10%] w-[400px] h-[400px] rounded-full bg-violet-900/10 blur-[120px] pointer-events-none" />
@@ -130,12 +130,12 @@ export default function ActivatePage() {
             )}
             License Key
           </div>
-          <div className="w-8 h-px bg-gray-700" />
+          <div className="w-8 h-px bg-gray-200 dark:bg-gray-700" />
           <div
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
               step === "credentials"
                 ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                : "bg-gray-800 text-gray-500 border border-gray-700"
+                : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-500 border border-gray-300 dark:border-gray-700"
             }`}
           >
             <User className="w-3.5 h-3.5" />
@@ -146,24 +146,24 @@ export default function ActivatePage() {
         {step === "license" ? (
           <form
             onSubmit={handleVerifyLicense}
-            className="w-full space-y-5 bg-gray-900/80 border border-gray-800 rounded-2xl p-8 backdrop-blur-sm"
+            className="w-full space-y-5 bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 backdrop-blur-sm"
           >
             <div className="flex flex-col items-center gap-3">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/20 flex items-center justify-center">
                 <KeyRound className="w-6 h-6 text-indigo-400" />
               </div>
               <div className="text-center">
-                <h1 className="text-xl font-bold text-white">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                   Activate License
                 </h1>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                   Enter the license key provided by your admin
                 </p>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                 License Key
               </label>
               <input
@@ -173,7 +173,7 @@ export default function ActivatePage() {
                 placeholder="RVW-XXXX-XXXX-XXXX"
                 autoFocus
                 required
-                className="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-gray-200
+                className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                            placeholder-gray-500 text-sm font-mono tracking-wider text-center focus:outline-none focus:ring-2
                            focus:ring-indigo-500/40 focus:border-indigo-500/40 transition-all uppercase"
               />
@@ -189,7 +189,7 @@ export default function ActivatePage() {
             <button
               type="submit"
               disabled={licenseLoading || !licenseKey.trim()}
-              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold
+              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-gray-900 dark:text-white font-semibold
                          text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed
                          shadow-[0_0_20px_rgba(99,102,241,0.15)] hover:shadow-[0_0_25px_rgba(99,102,241,0.3)]"
             >
@@ -203,29 +203,29 @@ export default function ActivatePage() {
         ) : (
           <form
             onSubmit={handleCreateAccount}
-            className="w-full space-y-5 bg-gray-900/80 border border-gray-800 rounded-2xl p-8 backdrop-blur-sm"
+            className="w-full space-y-5 bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 backdrop-blur-sm"
           >
             <div className="flex flex-col items-center gap-3">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/20 flex items-center justify-center">
                 <User className="w-6 h-6 text-blue-400" />
               </div>
               <div className="text-center">
-                <h1 className="text-xl font-bold text-white">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                   Create Your Account
                 </h1>
-                <p className="text-xs text-gray-500 mt-1">
-                  Welcome, <span className="text-gray-300 font-medium">{clientName}</span>
+                <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                  Welcome, <span className="text-gray-700 dark:text-gray-300 font-medium">{clientName}</span>
                 </p>
               </div>
             </div>
 
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                   Username
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-500" />
                   <input
                     type="text"
                     value={username}
@@ -234,7 +234,7 @@ export default function ActivatePage() {
                     autoFocus
                     required
                     minLength={3}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-gray-200
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                                placeholder-gray-500 text-sm focus:outline-none focus:ring-2
                                focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
                   />
@@ -242,11 +242,11 @@ export default function ActivatePage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-500" />
                   <input
                     type="password"
                     value={password}
@@ -254,7 +254,7 @@ export default function ActivatePage() {
                     placeholder="Create a password"
                     required
                     minLength={6}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-gray-200
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                                placeholder-gray-500 text-sm focus:outline-none focus:ring-2
                                focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
                   />
@@ -262,11 +262,11 @@ export default function ActivatePage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-500" />
                   <input
                     type="password"
                     value={confirmPassword}
@@ -274,7 +274,7 @@ export default function ActivatePage() {
                     placeholder="Confirm your password"
                     required
                     minLength={6}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-gray-200
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                                placeholder-gray-500 text-sm focus:outline-none focus:ring-2
                                focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
                   />
@@ -292,7 +292,7 @@ export default function ActivatePage() {
             <button
               type="submit"
               disabled={credLoading || !username || !password || !confirmPassword}
-              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold
+              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white font-semibold
                          text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed
                          shadow-[0_0_20px_rgba(37,99,235,0.15)] hover:shadow-[0_0_25px_rgba(37,99,235,0.3)]"
             >
@@ -309,7 +309,7 @@ export default function ActivatePage() {
         <div className="flex items-center justify-center gap-4 text-xs">
           <Link
             href="/login"
-            className="text-gray-500 hover:text-gray-300 transition-colors"
+            className="text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
           >
             Already have an account? Sign in
           </Link>

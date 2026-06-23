@@ -163,7 +163,7 @@ export default function ReviewPage() {
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
           <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
-          <p className="text-gray-400 text-sm">Loading…</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">Loading…</p>
         </div>
       </Shell>
     );
@@ -175,8 +175,8 @@ export default function ReviewPage() {
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
           <AlertCircle className="w-12 h-12 text-red-400" />
-          <h1 className="text-xl font-semibold text-gray-200">Invalid link.</h1>
-          <p className="text-gray-500 text-sm text-center">
+          <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Invalid link.</h1>
+          <p className="text-gray-500 dark:text-gray-500 text-sm text-center">
             This review link doesn&apos;t exist or has been removed.
           </p>
         </div>
@@ -190,8 +190,8 @@ export default function ReviewPage() {
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8">
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-white">{client?.name}</h1>
-            <p className="text-gray-400 text-base">How was your experience?</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{client?.name}</h1>
+            <p className="text-gray-600 dark:text-gray-400 text-base">How was your experience?</p>
           </div>
           <StarRow
             selected={selectedRating}
@@ -211,8 +211,8 @@ export default function ReviewPage() {
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[70vh] gap-6">
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-white">{client?.name}</h1>
-            <p className="text-gray-400 text-base">How was your experience?</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{client?.name}</h1>
+            <p className="text-gray-600 dark:text-gray-400 text-base">How was your experience?</p>
           </div>
           <StarRow
             selected={selectedRating}
@@ -227,7 +227,7 @@ export default function ReviewPage() {
               onChange={(e) => setFeedback(e.target.value)}
               placeholder="Tell us what went wrong (optional)"
               rows={4}
-              className="w-full rounded-xl border border-gray-700 bg-gray-800/60 text-gray-200 
+              className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 
                          placeholder-gray-500 px-4 py-3 text-sm focus:outline-none 
                          focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 
                          resize-none transition-all"
@@ -265,8 +265,8 @@ export default function ReviewPage() {
             <Loader2 className="w-10 h-10 animate-spin text-amber-500 relative" />
           </div>
           <div className="text-center space-y-1">
-            <p className="text-white font-semibold">Creating your review…</p>
-            <p className="text-gray-500 text-sm">This only takes a moment</p>
+            <p className="text-gray-900 dark:text-white font-semibold">Creating your review…</p>
+            <p className="text-gray-500 dark:text-gray-500 text-sm">This only takes a moment</p>
           </div>
         </div>
       </Shell>
@@ -279,7 +279,7 @@ export default function ReviewPage() {
       <Shell>
         <div className="flex flex-col items-center py-8 gap-6">
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-white">{client?.name}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{client?.name}</h1>
             <StarRow
               selected={selectedRating}
               hovered={0}
@@ -297,7 +297,7 @@ export default function ReviewPage() {
               <CheckCircle2 className="w-4 h-4" />
               Your Review
             </div>
-            <p className="text-gray-200 text-sm leading-relaxed whitespace-pre-wrap">
+            <p className="text-gray-800 dark:text-gray-200 text-sm leading-relaxed whitespace-pre-wrap">
               {generatedReview}
             </p>
             <button
@@ -353,10 +353,10 @@ export default function ReviewPage() {
           </a>
 
           {/* Instructions */}
-          <div className="w-full rounded-xl bg-gray-800/40 border border-gray-700/50 p-4">
-            <p className="text-gray-400 text-xs leading-relaxed text-center">
+          <div className="w-full rounded-xl bg-gray-100 dark:bg-gray-800/40 border border-gray-300 dark:border-gray-700/50 p-4">
+            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed text-center">
               Your review is copied. Tap the button above, then long-press in
-              the text field and tap <span className="text-gray-200 font-medium">Paste</span>.
+              the text field and tap <span className="text-gray-800 dark:text-gray-200 font-medium">Paste</span>.
             </p>
           </div>
         </div>
@@ -373,10 +373,10 @@ export default function ReviewPage() {
             <CheckCircle2 className="w-8 h-8 text-amber-500" />
           </div>
           <div className="text-center space-y-2">
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Thank you for your feedback
             </h2>
-            <p className="text-gray-400 text-sm leading-relaxed max-w-[280px]">
+            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed max-w-[280px]">
               We&apos;ll use this to improve. Your experience matters to us.
             </p>
           </div>
@@ -391,7 +391,7 @@ export default function ReviewPage() {
 // ─── Shell wrapper ───
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gray-950 flex justify-center">
+    <div className="min-h-screen bg-white dark:bg-gray-950 flex justify-center">
       <div className="w-full max-w-[420px] px-5">{children}</div>
     </div>
   );
