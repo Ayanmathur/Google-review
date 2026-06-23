@@ -39,8 +39,8 @@ export default function Home() {
       {/* Hero Section */}
       <main className="max-w-5xl mx-auto px-4 pt-20 pb-16 flex-grow flex flex-col items-center text-center space-y-10 relative z-10">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/40 border border-blue-900/50 text-blue-400 text-xs font-semibold tracking-wide uppercase">
-          <Star className="w-3.5 h-3.5 fill-current" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 text-black dark:text-blue-400 text-xs font-semibold tracking-wide uppercase">
+          <Star className="w-3.5 h-3.5 fill-current text-black dark:text-blue-400" />
           AI-Powered Reputation Management
         </div>
 
@@ -60,7 +60,7 @@ export default function Home() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md">
           <Link
-            href="/admin"
+            href="/login"
             className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white font-semibold text-sm transition-all shadow-[0_0_20px_rgba(37,99,235,0.2)] hover:shadow-[0_0_25px_rgba(37,99,235,0.4)] flex items-center justify-center gap-2"
           >
             Launch Dashboard
