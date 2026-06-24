@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 
-// Initialize the Gemini client using environment variable
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
 export async function POST(req: Request) {
@@ -12,7 +11,6 @@ export async function POST(req: Request) {
     businessName = body.businessName;
     const { businessType, rating, about } = body;
 
-    // Validate incoming data
     if (!businessName || !businessType || !rating) {
       return NextResponse.json(
         { error: 'Missing required fields: businessName, businessType, rating' },
@@ -20,27 +18,26 @@ export async function POST(req: Request) {
       );
     }
 
-    // Build the prompt with optional about info
-    let prompt = `Write a ${rating}-star Google review for a ${businessType} called ${businessName}.`;
+    let prompt = `Write a ${rating}-star Google review for a ${businessType} called "${businessName}".`;
     if (about) {
-      prompt += ` Here is some context about the business: ${about}.`;
+      prompt += ` Background about this business: ${about}.`;
     }
-    prompt += ` Make it sound like a real person: 2-3 sentences, specific but not over-the-top, warm and natural. Mention the business name once.`;
+    prompt += ` The review MUST be 2 to 3 full sentences long. Each sentence must be complete — never cut off mid-thought. Sound like a real, happy customer who visited recently. Be warm, specific, and natural. Mention the business name once. Do not use generic filler.`;
 
-    // Call the Gemini API
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
-        maxOutputTokens: 200,
-        systemInstruction: "You generate short, genuine Google reviews for satisfied customers. Return ONLY the review text. No quotes, no preamble, no explanation.",
+        maxOutputTokens: 300,
+        temperature: 0.9,
+        systemInstruction: "You write short, genuine Google reviews as if you are a real satisfied customer. Always write exactly 2 to 3 complete sentences. Never write half-sentences or trailing thoughts. Return ONLY the review text — no quotes, no preamble, no labels, no explanation.",
       }
     });
 
     const reviewText = response.text?.trim() || '';
 
-    if (!reviewText) {
-      throw new Error('No text returned from Gemini API');
+    if (!reviewText || reviewText.length < 30) {
+      throw new Error('Review too short or empty');
     }
 
     return NextResponse.json({ review: reviewText });
@@ -48,9 +45,8 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('Gemini API Error:', error);
 
-    // Fallback response if the API call fails or times out
     const safeName = businessName || 'this business';
-    const fallbackReview = `Really happy with my experience at ${safeName}. Great service and would definitely recommend to others.`;
+    const fallbackReview = `Had a really great experience at ${safeName}. The service was excellent and the staff were incredibly welcoming. Would definitely come back and recommend to friends and family.`;
 
     return NextResponse.json({ review: fallbackReview });
   }

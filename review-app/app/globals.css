@@ -16,6 +16,8 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: 'Space Grotesk', system-ui, sans-serif;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
 }
 
 @layer utilities {
