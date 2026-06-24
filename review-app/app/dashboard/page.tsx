@@ -128,7 +128,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
       </div>
     );
@@ -136,8 +136,8 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center px-4">
-        <div className="flex items-center gap-3 text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-6 py-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4">
+        <div className="flex items-center gap-3 text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-6 py-4">
           <AlertCircle className="w-5 h-5" />
           {error}
         </div>
@@ -146,7 +146,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-200">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-200">
       {/* Background Glows */}
       <div className="absolute top-[-5%] left-[-15%] w-[500px] h-[500px] rounded-full bg-blue-900/8 blur-[150px] pointer-events-none" />
       <div className="absolute bottom-[20%] right-[-10%] w-[400px] h-[400px] rounded-full bg-indigo-900/8 blur-[120px] pointer-events-none" />
@@ -162,7 +162,7 @@ export default function DashboardPage() {
             <ThemeToggle />
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800
+              className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800
                          hover:bg-gray-100 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-700 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200
                          font-medium transition-all"
             >
@@ -201,13 +201,13 @@ export default function DashboardPage() {
         </div>
 
         {/* QR Code Section */}
-        <div className="bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 backdrop-blur-sm">
+        <div className="bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-md p-6 backdrop-blur-sm">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
-            <QrCode className="w-5 h-5 text-blue-400" />
+            <QrCode className="w-5 h-5 text-rose-500" />
             Your Review QR Code
           </h2>
           <div className="flex items-center gap-6">
-            <div ref={qrRef} className="bg-white rounded-xl p-3 flex-shrink-0">
+            <div ref={qrRef} className="bg-white rounded-md p-3 flex-shrink-0">
               <QRCodeCanvas value={reviewUrl} size={120} level="M" />
             </div>
             <div className="space-y-3">
@@ -220,7 +220,7 @@ export default function DashboardPage() {
               </p>
               <button
                 onClick={handleDownloadQR}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500
+                className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-rose-500 hover:bg-rose-600
                            text-gray-900 dark:text-white text-sm font-medium transition-all
                            shadow-[0_0_15px_rgba(37,99,235,0.15)] hover:shadow-[0_0_20px_rgba(37,99,235,0.3)]"
               >
@@ -232,7 +232,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Feedback Section */}
-        <div className="bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 backdrop-blur-sm">
+        <div className="bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-md p-6 backdrop-blur-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-amber-400" />
@@ -244,7 +244,7 @@ export default function DashboardPage() {
             {reviews.length > 0 && (
               <button
                 onClick={handleExportXLSX}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600/20 border border-emerald-500/30
+                className="flex items-center gap-2 px-4 py-2 rounded-md bg-emerald-600/20 border border-emerald-500/30
                            hover:bg-emerald-600/30 text-emerald-400 text-sm font-medium transition-all"
               >
                 <FileSpreadsheet className="w-4 h-4" />
@@ -261,7 +261,7 @@ export default function DashboardPage() {
               </p>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+            <div className="overflow-hidden rounded-md border border-gray-200 dark:border-gray-800">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-gray-100 dark:bg-gray-800/50">
@@ -344,7 +344,7 @@ function StatCard({
 }) {
   return (
     <div
-      className={`bg-gradient-to-br ${bgColor} border ${borderColor} rounded-2xl p-5 text-center space-y-2 backdrop-blur-sm`}
+      className={`bg-gradient-to-br ${bgColor} border ${borderColor} rounded-md p-5 text-center space-y-2 backdrop-blur-sm`}
     >
       <div className={`flex items-center justify-center gap-2 ${color}`}>
         {icon}

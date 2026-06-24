@@ -108,7 +108,7 @@ export default function ActivatePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-200 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-200 flex items-center justify-center px-4">
       {/* Background Glows */}
       <div className="absolute top-[-10%] left-[-20%] w-[500px] h-[500px] rounded-full bg-indigo-900/10 blur-[150px] pointer-events-none" />
       <div className="absolute bottom-[10%] right-[-10%] w-[400px] h-[400px] rounded-full bg-violet-900/10 blur-[120px] pointer-events-none" />
@@ -119,7 +119,7 @@ export default function ActivatePage() {
           <div
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
               step === "license"
-                ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                ? "bg-rose-100 dark:bg-rose-500/20 text-rose-500 border border-blue-500/30"
                 : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
             }`}
           >
@@ -134,7 +134,7 @@ export default function ActivatePage() {
           <div
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
               step === "credentials"
-                ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                ? "bg-rose-100 dark:bg-rose-500/20 text-rose-500 border border-blue-500/30"
                 : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-500 border border-gray-300 dark:border-gray-700"
             }`}
           >
@@ -146,11 +146,11 @@ export default function ActivatePage() {
         {step === "license" ? (
           <form
             onSubmit={handleVerifyLicense}
-            className="w-full space-y-5 bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 backdrop-blur-sm"
+            className="w-full space-y-5 bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-md p-8 backdrop-blur-sm"
           >
             <div className="flex flex-col items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/20 flex items-center justify-center">
-                <KeyRound className="w-6 h-6 text-indigo-400" />
+              <div className="w-14 h-14 rounded-md bg-gradient-to-br from-rose-100 to-amber-100 dark:from-rose-500/20 dark:to-amber-500/20 border border-rose-200 dark:border-rose-500/20 flex items-center justify-center">
+                <KeyRound className="w-6 h-6 text-rose-500" />
               </div>
               <div className="text-center">
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -173,14 +173,14 @@ export default function ActivatePage() {
                 placeholder="RVW-XXXX-XXXX-XXXX"
                 autoFocus
                 required
-                className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
+                className="w-full px-4 py-3 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                            placeholder-gray-500 text-sm font-mono tracking-wider text-center focus:outline-none focus:ring-2
-                           focus:ring-indigo-500/40 focus:border-indigo-500/40 transition-all uppercase"
+                           focus:ring-rose-400/40 focus:border-rose-400/40 transition-all uppercase"
               />
             </div>
 
             {licenseError && (
-              <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
+              <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-md px-4 py-3">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 {licenseError}
               </div>
@@ -189,9 +189,9 @@ export default function ActivatePage() {
             <button
               type="submit"
               disabled={licenseLoading || !licenseKey.trim()}
-              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-gray-900 dark:text-white font-semibold
+              className="w-full py-3 rounded-md bg-rose-500 hover:bg-rose-600 text-gray-900 dark:text-white font-semibold
                          text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed
-                         shadow-[0_0_20px_rgba(99,102,241,0.15)] hover:shadow-[0_0_25px_rgba(99,102,241,0.3)]"
+                         shadow-lg shadow-rose-500/15 hover:shadow-rose-500/25"
             >
               {licenseLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin mx-auto" />
@@ -203,11 +203,11 @@ export default function ActivatePage() {
         ) : (
           <form
             onSubmit={handleCreateAccount}
-            className="w-full space-y-5 bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 backdrop-blur-sm"
+            className="w-full space-y-5 bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-md p-8 backdrop-blur-sm"
           >
             <div className="flex flex-col items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/20 flex items-center justify-center">
-                <User className="w-6 h-6 text-blue-400" />
+              <div className="w-14 h-14 rounded-md bg-gradient-to-br from-rose-100 to-amber-100 dark:from-rose-500/20 dark:to-amber-500/20 border border-rose-200 dark:border-rose-500/20 flex items-center justify-center">
+                <User className="w-6 h-6 text-rose-500" />
               </div>
               <div className="text-center">
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -234,9 +234,9 @@ export default function ActivatePage() {
                     autoFocus
                     required
                     minLength={3}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
+                    className="w-full pl-10 pr-4 py-3 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                                placeholder-gray-500 text-sm focus:outline-none focus:ring-2
-                               focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
+                               focus:ring-rose-400/40 focus:border-rose-400/40 transition-all"
                   />
                 </div>
               </div>
@@ -254,9 +254,9 @@ export default function ActivatePage() {
                     placeholder="Create a password"
                     required
                     minLength={6}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
+                    className="w-full pl-10 pr-4 py-3 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                                placeholder-gray-500 text-sm focus:outline-none focus:ring-2
-                               focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
+                               focus:ring-rose-400/40 focus:border-rose-400/40 transition-all"
                   />
                 </div>
               </div>
@@ -274,16 +274,16 @@ export default function ActivatePage() {
                     placeholder="Confirm your password"
                     required
                     minLength={6}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
+                    className="w-full pl-10 pr-4 py-3 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                                placeholder-gray-500 text-sm focus:outline-none focus:ring-2
-                               focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
+                               focus:ring-rose-400/40 focus:border-rose-400/40 transition-all"
                   />
                 </div>
               </div>
             </div>
 
             {credError && (
-              <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
+              <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-md px-4 py-3">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 {credError}
               </div>
@@ -292,9 +292,9 @@ export default function ActivatePage() {
             <button
               type="submit"
               disabled={credLoading || !username || !password || !confirmPassword}
-              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white font-semibold
+              className="w-full py-3 rounded-md bg-rose-500 hover:bg-rose-600 text-gray-900 dark:text-white font-semibold
                          text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed
-                         shadow-[0_0_20px_rgba(37,99,235,0.15)] hover:shadow-[0_0_25px_rgba(37,99,235,0.3)]"
+                         shadow-lg shadow-rose-500/15 hover:shadow-rose-500/25"
             >
               {credLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin mx-auto" />

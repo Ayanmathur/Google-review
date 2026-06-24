@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Star, Loader2, Copy, ExternalLink, CheckCircle2, AlertCircle } from "lucide-react";
+import { Star, Loader2, CheckCircle2, AlertCircle, RefreshCw } from "lucide-react";
 
 interface Client {
   id: string;
@@ -11,6 +11,7 @@ interface Client {
   slug: string;
   business_type: string;
   google_place_id: string;
+  about: string | null;
 }
 
 type Phase =
@@ -34,8 +35,20 @@ export default function ReviewPage() {
   const [generatedReview, setGeneratedReview] = useState("");
   const [copied, setCopied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [countdown, setCountdown] = useState(3);
+  const [regenerating, setRegenerating] = useState(false);
 
   const scanIdRef = useRef<string | null>(null);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const countdownValueRef = useRef(3);
+  const googleReviewUrlRef = useRef("#");
+
+  // Keep google review URL ref in sync
+  useEffect(() => {
+    if (client?.google_place_id) {
+      googleReviewUrlRef.current = `https://search.google.com/local/writereview?placeid=${client.google_place_id}`;
+    }
+  }, [client]);
 
   // Fetch client & log scan on mount
   useEffect(() => {
@@ -78,47 +91,125 @@ export default function ReviewPage() {
       .eq("id", scanIdRef.current);
   }, []);
 
+  // ─── Countdown timer logic ───
+  const clearCountdown = useCallback(() => {
+    if (countdownRef.current) {
+      clearInterval(countdownRef.current);
+      countdownRef.current = null;
+    }
+  }, []);
+
+  const resetCountdown = useCallback(() => {
+    countdownValueRef.current = 3;
+    setCountdown(3);
+  }, []);
+
+  const startCountdown = useCallback(() => {
+    clearCountdown();
+    countdownValueRef.current = 3;
+    setCountdown(3);
+
+    countdownRef.current = setInterval(() => {
+      countdownValueRef.current -= 1;
+      setCountdown(countdownValueRef.current);
+
+      if (countdownValueRef.current <= 0) {
+        clearInterval(countdownRef.current!);
+        countdownRef.current = null;
+        window.location.href = googleReviewUrlRef.current;
+      }
+    }, 1000);
+  }, [clearCountdown]);
+
+  // Interaction listeners to reset countdown (only in positive-result phase)
+  useEffect(() => {
+    if (phase !== "positive-result") return;
+
+    const handleInteraction = () => {
+      resetCountdown();
+    };
+
+    const events = ["click", "touchstart", "scroll", "mousemove"];
+    events.forEach((evt) => window.addEventListener(evt, handleInteraction, { passive: true }));
+
+    return () => {
+      events.forEach((evt) => window.removeEventListener(evt, handleInteraction));
+    };
+  }, [phase, resetCountdown]);
+
+  // Clean up countdown on unmount
+  useEffect(() => {
+    return () => clearCountdown();
+  }, [clearCountdown]);
+
+  // ─── Generate review helper ───
+  const generateReview = useCallback(
+    async (rating: number) => {
+      if (!client) return "";
+
+      const res = await fetch("/api/generate-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          businessName: client.name,
+          businessType: client.business_type,
+          rating,
+          about: client.about,
+        }),
+      });
+
+      const data = await res.json();
+      return data.review || "";
+    },
+    [client]
+  );
+
+  const autoCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
+  };
+
+  // ─── Handlers ───
   const handleStarClick = async (rating: number) => {
     setSelectedRating(rating);
 
     if (rating <= 3) {
       setPhase("negative-form");
     } else {
-      // 4 or 5 stars → generate AI review
       setPhase("generating");
 
       try {
-        const res = await fetch("/api/generate-review", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            businessName: client!.name,
-            businessType: client!.business_type,
-            rating,
-          }),
-        });
-
-        const data = await res.json();
-        const review = data.review || "";
-
+        const review = await generateReview(rating);
         setGeneratedReview(review);
         setPhase("positive-result");
 
-        // Auto-copy to clipboard
-        try {
-          await navigator.clipboard.writeText(review);
-          setCopied(true);
-        } catch {
-          // Clipboard may fail on some mobile browsers
-          setCopied(false);
-        }
-
-        // Update scan record
+        await autoCopy(review);
+        startCountdown();
         await updateScanRating(rating);
       } catch {
         setGeneratedReview("Something went wrong. Please try again.");
         setPhase("positive-result");
       }
+    }
+  };
+
+  const handleTryAnother = async () => {
+    if (regenerating) return;
+    setRegenerating(true);
+
+    try {
+      const review = await generateReview(selectedRating);
+      setGeneratedReview(review);
+      await autoCopy(review);
+      resetCountdown();
+    } catch {
+      // Keep existing review
+    } finally {
+      setRegenerating(false);
     }
   };
 
@@ -136,20 +227,9 @@ export default function ReviewPage() {
       await updateScanRating(selectedRating);
       setPhase("negative-thankyou");
     } catch {
-      // Silent fail — still show thank you
       setPhase("negative-thankyou");
     } finally {
       setSubmitting(false);
-    }
-  };
-
-  const handleManualCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(generatedReview);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 3000);
-    } catch {
-      // Fallback: select text
     }
   };
 
@@ -162,8 +242,8 @@ export default function ReviewPage() {
     return (
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-          <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
-          <p className="text-gray-600 dark:text-gray-400 text-sm">Loading…</p>
+          <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
+          <p className="text-gray-600 dark:text-gray-400 text-sm font-sans">Loading…</p>
         </div>
       </Shell>
     );
@@ -174,9 +254,13 @@ export default function ReviewPage() {
     return (
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-          <AlertCircle className="w-12 h-12 text-red-400" />
-          <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Invalid link.</h1>
-          <p className="text-gray-500 dark:text-gray-500 text-sm text-center">
+          <div className="w-14 h-14 rounded-md bg-rose-100 dark:bg-rose-500/10 flex items-center justify-center">
+            <AlertCircle className="w-7 h-7 text-rose-500" />
+          </div>
+          <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200 font-sans">
+            Invalid link.
+          </h1>
+          <p className="text-gray-500 dark:text-gray-500 text-sm text-center font-sans">
             This review link doesn&apos;t exist or has been removed.
           </p>
         </div>
@@ -190,8 +274,12 @@ export default function ReviewPage() {
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8">
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{client?.name}</h1>
-            <p className="text-gray-600 dark:text-gray-400 text-base">How was your experience?</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-sans">
+              {client?.name}
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 text-base font-sans">
+              How was your experience?
+            </p>
           </div>
           <StarRow
             selected={selectedRating}
@@ -199,7 +287,7 @@ export default function ReviewPage() {
             onHover={setHoveredRating}
             onClick={handleStarClick}
           />
-          <p className="text-gray-600 text-xs">Tap a star to rate</p>
+          <p className="text-gray-500 dark:text-gray-500 text-xs font-sans">Tap a star to rate</p>
         </div>
       </Shell>
     );
@@ -211,8 +299,12 @@ export default function ReviewPage() {
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[70vh] gap-6">
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{client?.name}</h1>
-            <p className="text-gray-600 dark:text-gray-400 text-base">How was your experience?</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-sans">
+              {client?.name}
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 text-base font-sans">
+              How was your experience?
+            </p>
           </div>
           <StarRow
             selected={selectedRating}
@@ -227,18 +319,19 @@ export default function ReviewPage() {
               onChange={(e) => setFeedback(e.target.value)}
               placeholder="Tell us what went wrong (optional)"
               rows={4}
-              className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 
-                         placeholder-gray-500 px-4 py-3 text-sm focus:outline-none 
-                         focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 
+              className="w-full rounded-md border border-rose-200 dark:border-gray-700
+                         bg-rose-50 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200
+                         placeholder-gray-500 px-4 py-3 text-sm font-sans
+                         focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50
                          resize-none transition-all"
             />
             <button
               onClick={handleNegativeSubmit}
               disabled={submitting}
-              className="w-full py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 
-                         text-gray-900 font-semibold text-sm transition-all 
+              className="w-full py-3.5 rounded-md bg-amber-400 hover:bg-amber-200
+                         text-gray-900 font-semibold text-sm font-sans transition-all
                          disabled:opacity-50 disabled:cursor-not-allowed
-                         active:scale-[0.98] shadow-lg shadow-amber-500/20"
+                         active:scale-[0.98]"
             >
               {submitting ? (
                 <span className="flex items-center justify-center gap-2">
@@ -261,12 +354,16 @@ export default function ReviewPage() {
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[70vh] gap-6">
           <div className="relative">
-            <div className="absolute inset-0 rounded-full bg-amber-500/20 animate-ping" />
-            <Loader2 className="w-10 h-10 animate-spin text-amber-500 relative" />
+            <div className="absolute inset-0 rounded-md bg-amber-400/20 animate-ping" />
+            <Loader2 className="w-10 h-10 animate-spin text-amber-400 relative" />
           </div>
           <div className="text-center space-y-1">
-            <p className="text-gray-900 dark:text-white font-semibold">Creating your review…</p>
-            <p className="text-gray-500 dark:text-gray-500 text-sm">This only takes a moment</p>
+            <p className="text-gray-900 dark:text-white font-semibold font-sans">
+              Creating your review…
+            </p>
+            <p className="text-gray-500 dark:text-gray-500 text-sm font-sans">
+              This only takes a moment
+            </p>
           </div>
         </div>
       </Shell>
@@ -277,9 +374,12 @@ export default function ReviewPage() {
   if (phase === "positive-result") {
     return (
       <Shell>
-        <div className="flex flex-col items-center py-8 gap-6">
+        <div className="flex flex-col items-center py-8 gap-5">
+          {/* Header */}
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{client?.name}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-sans">
+              {client?.name}
+            </h1>
             <StarRow
               selected={selectedRating}
               hovered={0}
@@ -291,44 +391,50 @@ export default function ReviewPage() {
           </div>
 
           {/* Generated Review Card */}
-          <div className="w-full rounded-2xl border border-emerald-500/30 bg-emerald-950/20 
-                          backdrop-blur-sm p-5 space-y-3">
-            <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium">
+          <div
+            className="w-full rounded-md border border-amber-200 dark:border-amber-400/30
+                        bg-amber-50 dark:bg-amber-400/5 p-5 space-y-3"
+          >
+            <div className="flex items-center gap-2 text-amber-400 text-xs font-medium font-sans">
               <CheckCircle2 className="w-4 h-4" />
-              Your Review
+              Your Review — copied to clipboard
             </div>
-            <p className="text-gray-800 dark:text-gray-200 text-sm leading-relaxed whitespace-pre-wrap">
+            <p className="text-gray-800 dark:text-gray-200 text-sm leading-relaxed whitespace-pre-wrap font-sans">
               {generatedReview}
             </p>
-            <button
-              onClick={handleManualCopy}
-              className="flex items-center gap-2 text-xs text-emerald-400 hover:text-emerald-300 
-                         transition-colors mt-1"
-            >
-              <Copy className="w-3.5 h-3.5" />
-              {copied ? "Copied!" : "Copy to clipboard"}
-            </button>
           </div>
+
+          {/* Try Another */}
+          <button
+            onClick={handleTryAnother}
+            disabled={regenerating}
+            className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400
+                       hover:text-gray-700 dark:hover:text-gray-300 transition-colors font-sans
+                       disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${regenerating ? "animate-spin" : ""}`} />
+            Try another ↻
+          </button>
 
           {/* Copied Confirmation */}
           {copied && (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full 
-                            bg-emerald-500/10 border border-emerald-500/20">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              <span className="text-emerald-400 text-sm font-medium">
+            <div
+              className="flex items-center gap-2 px-4 py-2 rounded-md
+                          bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20"
+            >
+              <CheckCircle2 className="w-4 h-4 text-rose-500" />
+              <span className="text-rose-500 text-sm font-medium font-sans">
                 Review copied to your clipboard!
               </span>
             </div>
           )}
 
-          {/* Google Button */}
+          {/* Post Google Review Button */}
           <a
             href={googleReviewUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2.5 py-4 rounded-xl 
-                       bg-white hover:bg-gray-100 text-gray-900 font-semibold text-sm 
-                       transition-all active:scale-[0.98] shadow-xl shadow-white/10"
+            className="w-full flex items-center justify-center gap-2.5 py-4 rounded-md
+                       bg-teal-500 hover:bg-teal-600 text-gray-900 font-bold text-sm font-sans
+                       transition-all active:scale-[0.98]"
           >
             <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
               <path
@@ -348,15 +454,22 @@ export default function ReviewPage() {
                 fill="#EA4335"
               />
             </svg>
-            Open Google to post your review
-            <ExternalLink className="w-4 h-4 opacity-50" />
+            Post Your Google Review
           </a>
 
-          {/* Instructions */}
-          <div className="w-full rounded-xl bg-gray-100 dark:bg-gray-800/40 border border-gray-300 dark:border-gray-700/50 p-4">
-            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed text-center">
-              Your review is copied. Tap the button above, then long-press in
-              the text field and tap <span className="text-gray-800 dark:text-gray-200 font-medium">Paste</span>.
+          {/* Countdown */}
+          <p className="text-gray-500 dark:text-gray-500 text-xs font-sans">
+            Redirecting in {countdown}...
+          </p>
+
+          {/* Paste instructions */}
+          <div
+            className="w-full rounded-md bg-rose-50 dark:bg-gray-800/40 border border-rose-100
+                        dark:border-gray-700/50 p-4"
+          >
+            <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed text-center font-sans">
+              Your review is copied. Tap the button above, then long-press in the text field and
+              tap <span className="text-gray-800 dark:text-gray-200 font-medium">Paste</span>.
             </p>
           </div>
         </div>
@@ -369,14 +482,14 @@ export default function ReviewPage() {
     return (
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[70vh] gap-5">
-          <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center">
-            <CheckCircle2 className="w-8 h-8 text-amber-500" />
+          <div className="w-16 h-16 rounded-md bg-amber-100 dark:bg-amber-400/10 flex items-center justify-center">
+            <CheckCircle2 className="w-8 h-8 text-amber-400" />
           </div>
           <div className="text-center space-y-2">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white font-sans">
               Thank you for your feedback
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed max-w-[280px]">
+            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed max-w-[280px] font-sans">
               We&apos;ll use this to improve. Your experience matters to us.
             </p>
           </div>
@@ -391,7 +504,7 @@ export default function ReviewPage() {
 // ─── Shell wrapper ───
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 flex justify-center">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex justify-center">
       <div className="w-full max-w-[420px] px-5">{children}</div>
     </div>
   );
@@ -435,7 +548,7 @@ function StarRow({
               className={`${starSize} transition-colors duration-150 ${
                 active
                   ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.4)]"
-                  : "fill-transparent text-gray-600"
+                  : "fill-transparent text-gray-400 dark:text-gray-600"
               }`}
             />
           </button>

@@ -61,6 +61,7 @@ interface Client {
   client_username: string | null;
   client_password: string | null;
   is_activated: boolean;
+  about: string;
 }
 
 interface ScanStats {
@@ -179,7 +180,7 @@ function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
     <div className="flex items-center justify-center min-h-screen px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8"
+        className="w-full max-w-sm space-y-5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-md p-8"
       >
         <div className="flex flex-col items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
@@ -194,9 +195,9 @@ function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Enter password"
           autoFocus
-          className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
+          className="w-full px-4 py-3 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                      placeholder-gray-500 text-sm focus:outline-none focus:ring-2
-                     focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
+                     focus:ring-rose-400/40 focus:border-rose-400/40 transition-all"
         />
 
         {error && (
@@ -209,7 +210,7 @@ function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
         <button
           type="submit"
           disabled={loading || !password}
-          className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white font-medium
+          className="w-full py-3 rounded-md bg-rose-500 hover:bg-rose-600 text-gray-900 dark:text-white font-medium
                      text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {loading ? (
@@ -300,6 +301,7 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
   const [slug, setSlug] = useState("");
   const [businessType, setBusinessType] = useState("");
   const [googlePlaceId, setGooglePlaceId] = useState("");
+  const [about, setAbout] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -332,6 +334,7 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
       slug,
       business_type: businessType,
       google_place_id: googlePlaceId,
+      about,
       license_key: licenseKey,
       is_active: true,
       is_activated: false,
@@ -346,6 +349,7 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
       setSlug("");
       setBusinessType("");
       setGooglePlaceId("");
+      setAbout('');
       onClientAdded();
     }
 
@@ -369,7 +373,7 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden">
+    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-md overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors"
@@ -397,7 +401,7 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
                 Client added successfully!
               </div>
 
-              <div className="bg-gray-100 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-xl p-4 space-y-3">
+              <div className="bg-gray-100 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-md p-4 space-y-3">
                 <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider font-medium">
                   License Key — Share this with the client
                 </p>
@@ -427,7 +431,7 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
 
               <button
                 onClick={handleDone}
-                className="w-full py-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium
+                className="w-full py-3 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium
                            text-sm transition-all"
               >
                 Done
@@ -488,6 +492,16 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
                 </a>
               </Field>
 
+              <Field label="About / Business Info">
+                <textarea
+                  value={about}
+                  onChange={(e) => setAbout(e.target.value)}
+                  placeholder="Details about the business that help generate better reviews (e.g., specialty dishes, unique services, years in business)"
+                  rows={3}
+                  className="form-input resize-none"
+                />
+              </Field>
+
               {error && (
                 <div className="flex items-center gap-2 text-red-400 text-sm">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -498,7 +512,7 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white font-medium
+                className="w-full py-3 rounded-md bg-rose-500 hover:bg-rose-600 text-gray-900 dark:text-white font-medium
                            text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {submitting ? (
@@ -557,6 +571,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
   const [editSlug, setEditSlug] = useState(client.slug);
   const [editBusinessType, setEditBusinessType] = useState(client.business_type);
   const [editGooglePlaceId, setEditGooglePlaceId] = useState(client.google_place_id);
+  const [editAbout, setEditAbout] = useState(client.about || '');
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -664,6 +679,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
     setEditSlug(client.slug);
     setEditBusinessType(client.business_type);
     setEditGooglePlaceId(client.google_place_id);
+    setEditAbout(client.about || '');
     setEditError("");
     setEditing(true);
   };
@@ -684,6 +700,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
         slug: editSlug,
         business_type: editBusinessType,
         google_place_id: editGooglePlaceId,
+        about: editAbout,
       })
       .eq("id", client.id);
 
@@ -761,7 +778,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 space-y-4">
+    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-md p-5 space-y-4">
       {/* Header with Status Badge */}
       <div className="flex items-start justify-between gap-4">
         {editing ? (
@@ -798,6 +815,14 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
                 className="form-input font-mono text-xs"
               />
             </Field>
+            <Field label="About / Business Info">
+              <textarea
+                value={editAbout}
+                onChange={(e) => setEditAbout(e.target.value)}
+                rows={3}
+                className="form-input resize-none"
+              />
+            </Field>
 
             {editError && (
               <div className="flex items-center gap-2 text-red-400 text-sm">
@@ -810,7 +835,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
               <button
                 onClick={handleSaveEdit}
                 disabled={saving || !editName || !editSlug || !editBusinessType || !editGooglePlaceId}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-rose-500 hover:bg-rose-600
                            text-gray-900 dark:text-white text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {saving ? (
@@ -836,7 +861,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
               <div className="flex items-center gap-2.5 mb-1">
                 <h3 className="text-base font-semibold text-gray-900 dark:text-white">{client.name}</h3>
                 <span
-                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider border ${status.bgColor} ${status.color}`}
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider border ${status.bgColor} ${status.color}`}
                 >
                   {status.label}
                 </span>
@@ -859,19 +884,19 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
       </div>
 
       {/* License Key Section */}
-      <div className="bg-gray-100 dark:bg-gray-800/40 border border-gray-300 dark:border-gray-700/50 rounded-xl p-4 space-y-3">
+      <div className="bg-gray-100 dark:bg-gray-800/40 border border-gray-300 dark:border-gray-700/50 rounded-md p-4 space-y-3">
         <div className="flex items-center gap-2">
           <KeyRound className="w-4 h-4 text-amber-400" />
           <span className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
             License Key
           </span>
           {!client.is_activated && (
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 font-medium">
+            <span className="text-[10px] px-2 py-0.5 rounded-md bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 font-medium">
               Not Activated
             </span>
           )}
           {client.is_activated && (
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium">
+            <span className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium">
               Activated
             </span>
           )}
@@ -929,7 +954,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
               value={expiryDate}
               onChange={(e) => handleUpdateExpiry(e.target.value)}
               className="px-2 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-900/60 border border-gray-300 dark:border-gray-700/50 text-gray-700 dark:text-gray-300 text-xs
-                         focus:outline-none focus:ring-1 focus:ring-blue-500/40 transition-all
+                         focus:outline-none focus:ring-1 focus:ring-rose-400/40 transition-all
                          [color-scheme:dark]"
             />
             {updatingExpiry && <Loader2 className="w-3 h-3 animate-spin text-gray-500 dark:text-gray-500" />}
@@ -1096,7 +1121,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
             feedback.map((review) => (
               <div
                 key={review.id}
-                className="bg-gray-100 dark:bg-gray-800/50 rounded-xl px-4 py-3 space-y-1.5"
+                className="bg-gray-100 dark:bg-gray-800/50 rounded-md px-4 py-3 space-y-1.5"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
@@ -1149,7 +1174,7 @@ function StatBadge({
   color: string;
 }) {
   return (
-    <div className="flex-1 bg-gray-100 dark:bg-gray-800/50 rounded-xl px-3 py-2.5 text-center space-y-1">
+    <div className="flex-1 bg-gray-100 dark:bg-gray-800/50 rounded-md px-3 py-2.5 text-center space-y-1">
       <div className={`flex items-center justify-center gap-1.5 ${color}`}>
         {icon}
         <span className="text-base font-semibold">{value}</span>
