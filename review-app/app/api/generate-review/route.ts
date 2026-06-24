@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     let prompt = `Write a ${rating}-star Google review for a ${businessType} called "${businessName}".`;
     if (about) {
-      prompt += ` Background about this business: ${about}.`;
+      prompt += ` IMPORTANT: Use the following background information about the business to make the review specific and personalized: ${about}. Do not just copy it, but incorporate the details naturally as if you experienced them.`;
     }
     prompt += ` The review MUST be 2 to 3 full sentences long. Each sentence must be complete — never cut off mid-thought. Sound like a real, happy customer who visited recently. Be warm, specific, and natural. Mention the business name once. Do not use generic filler.`;
 

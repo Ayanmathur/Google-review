@@ -297,11 +297,11 @@ export default function ReviewPage() {
     return (
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8">
-          <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-sans tracking-wide">
+          <div className="text-center space-y-3">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white font-sans tracking-wide">
               {client?.name}
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 text-base font-sans leading-relaxed">
+            <p className="text-gray-600 dark:text-gray-400 text-lg font-sans leading-relaxed">
               Hey there! How was your experience with us?
             </p>
           </div>
@@ -322,11 +322,11 @@ export default function ReviewPage() {
     return (
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[70vh] gap-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-sans tracking-wide">
+          <div className="text-center space-y-3">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white font-sans tracking-wide">
               {client?.name}
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 text-base font-sans leading-relaxed">
+            <p className="text-gray-600 dark:text-gray-400 text-lg font-sans leading-relaxed">
               We&apos;re sorry to hear that. What went wrong?
             </p>
           </div>
@@ -397,10 +397,10 @@ export default function ReviewPage() {
   if (phase === "positive-result") {
     return (
       <Shell>
-        <div className="flex flex-col items-center py-8 gap-5">
+        <div className="flex flex-col items-center py-8 gap-5 w-full">
           {/* Header */}
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white font-sans tracking-wide">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white font-sans tracking-wide">
               {client?.name}
             </h1>
             <StarRow
@@ -416,13 +416,13 @@ export default function ReviewPage() {
           {/* Generated Review Card */}
           <div
             className="w-full rounded-md border border-amber-200 dark:border-amber-900/40
-                        bg-amber-50 dark:bg-amber-950/20 p-5 space-y-3 shadow-sm"
+                        bg-amber-50 dark:bg-amber-950/20 p-5 md:p-6 space-y-3 shadow-sm"
           >
-            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500 text-xs font-semibold font-sans uppercase tracking-wider">
-              <CheckCircle2 className="w-4 h-4" />
+            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500 text-xs md:text-sm font-semibold font-sans uppercase tracking-wider">
+              <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5" />
               Here is a draft for you
             </div>
-            <p className="text-gray-800 dark:text-gray-200 text-sm leading-relaxed whitespace-pre-wrap font-sans">
+            <p className="text-gray-800 dark:text-gray-200 text-base md:text-lg leading-relaxed whitespace-pre-wrap font-sans">
               {generatedReview}
             </p>
           </div>
@@ -431,20 +431,20 @@ export default function ReviewPage() {
           <button
             onClick={handleTryAnother}
             disabled={regenerating}
-            className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400
+            className="flex items-center gap-1.5 text-sm md:text-base text-gray-500 dark:text-gray-400
                        hover:text-amber-600 dark:hover:text-amber-400 transition-colors font-sans
-                       disabled:opacity-50 font-medium"
+                       disabled:opacity-50 font-medium py-2"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${regenerating ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-4 h-4 md:w-5 md:h-5 ${regenerating ? "animate-spin" : ""}`} />
             Try another version
           </button>
 
           {/* Action Buttons Row */}
-          <div className="w-full flex items-center gap-2 mt-2">
+          <div className="w-full flex items-center gap-3 md:gap-4 mt-2">
             <a
               href={googleReviewUrl}
-              className="flex-1 flex items-center justify-center gap-2 py-4 rounded-md
-                         bg-amber-400 hover:bg-amber-500 text-gray-900 font-bold text-sm font-sans
+              className="flex-1 flex items-center justify-center gap-2 py-4 md:py-5 rounded-md
+                         bg-amber-400 hover:bg-amber-500 text-gray-900 font-bold text-base md:text-lg font-sans
                          transition-all active:scale-[0.98] shadow-sm"
             >
               <svg viewBox="0 0 24 24" className="w-5 h-5 bg-white rounded-md p-0.5" fill="none">
@@ -470,24 +470,24 @@ export default function ReviewPage() {
             
             <button
               onClick={handleManualCopy}
-              className={`flex flex-col items-center justify-center w-16 py-3 rounded-md transition-all active:scale-[0.98] border shadow-sm
+              className={`flex flex-col items-center justify-center w-[72px] md:w-[84px] py-3 md:py-4 rounded-md transition-all active:scale-[0.98] border shadow-sm
                 ${copied 
                   ? 'bg-amber-100 border-amber-200 text-amber-700 dark:bg-amber-900/40 dark:border-amber-800 dark:text-amber-400' 
                   : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-750'
                 }`}
               title="Copy to clipboard"
             >
-              {copied ? <CheckCircle2 className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-              <span className="text-[10px] mt-1 font-medium">{copied ? 'Copied!' : 'Copy'}</span>
+              {copied ? <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" /> : <Copy className="w-5 h-5 md:w-6 md:h-6" />}
+              <span className="text-[11px] md:text-xs mt-1 font-medium">{copied ? 'Copied!' : 'Copy'}</span>
             </button>
           </div>
 
           {/* Countdown & Pause */}
-          <div className="flex items-center gap-3 bg-gray-100 dark:bg-gray-800/80 px-4 py-2 rounded-md">
-            <span className="text-gray-600 dark:text-gray-400 text-sm font-sans font-medium">
+          <div className="flex items-center gap-3 bg-gray-100 dark:bg-gray-800/80 px-5 py-3 md:py-4 rounded-md">
+            <span className="text-gray-600 dark:text-gray-400 text-sm md:text-base font-sans font-medium">
               Redirecting in {countdown}s
             </span>
-            <div className="w-px h-4 bg-gray-300 dark:bg-gray-600"></div>
+            <div className="w-px h-5 bg-gray-300 dark:bg-gray-600"></div>
             <button
               onClick={togglePause}
               className="text-gray-500 hover:text-amber-600 dark:hover:text-amber-400 transition-colors p-1"
@@ -500,9 +500,9 @@ export default function ReviewPage() {
           {/* Paste instructions */}
           <div
             className="w-full rounded-md bg-gray-100 dark:bg-gray-800/40 border border-gray-200
-                        dark:border-gray-700 p-5 mt-2"
+                        dark:border-gray-700 p-5 md:p-6 mt-2"
           >
-            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed text-center font-sans">
+            <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base leading-relaxed text-center font-sans">
               We&apos;ve copied your review! Just tap the <strong className="text-gray-900 dark:text-gray-100">Go to Google</strong> button, long-press in the review box there, and tap <strong className="text-gray-900 dark:text-gray-100">Paste</strong>.
             </p>
           </div>
@@ -538,8 +538,8 @@ export default function ReviewPage() {
 // ─── Shell wrapper ───
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-white dark:bg-[#111] flex justify-center">
-      <div className="w-full max-w-[420px] px-6">{children}</div>
+    <div className="min-h-screen bg-white dark:bg-[#111] flex justify-center items-center py-8">
+      <div className="w-full max-w-[420px] sm:max-w-md md:max-w-lg px-6 sm:px-8">{children}</div>
     </div>
   );
 }
