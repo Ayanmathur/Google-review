@@ -24,6 +24,20 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+  
+  .bg-watermark {
+    background-image: 
+      radial-gradient(rgba(148, 163, 184, 0.1) 2px, transparent 2px),
+      radial-gradient(rgba(148, 163, 184, 0.1) 2px, transparent 2px);
+    background-size: 32px 32px;
+    background-position: 0 0, 16px 16px;
+  }
+  
+  .dark .bg-watermark {
+    background-image: 
+      radial-gradient(rgba(100, 116, 139, 0.15) 2px, transparent 2px),
+      radial-gradient(rgba(100, 116, 139, 0.15) 2px, transparent 2px);
+  }
 }
 
 @layer components {

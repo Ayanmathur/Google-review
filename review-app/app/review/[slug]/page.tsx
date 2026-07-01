@@ -266,7 +266,7 @@ export default function ReviewPage() {
     return (
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-          <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
           <p className="text-gray-600 dark:text-gray-400 text-sm font-sans">Loading…</p>
         </div>
       </Shell>
@@ -346,13 +346,13 @@ export default function ReviewPage() {
               className="w-full rounded-md border border-gray-300 dark:border-gray-700
                          bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200
                          placeholder-gray-500 px-4 py-3 text-sm font-sans
-                         focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50
+                         focus:outline-none focus:ring-2 focus:ring-sky-600/50 focus:border-sky-600/50
                          resize-none transition-all"
             />
             <button
               onClick={handleNegativeSubmit}
               disabled={submitting}
-              className="w-full py-3.5 rounded-md bg-amber-500 hover:bg-amber-600
+              className="w-full py-3.5 rounded-md bg-sky-600 hover:bg-sky-700
                          text-white font-semibold text-sm font-sans transition-all
                          disabled:opacity-50 disabled:cursor-not-allowed
                          active:scale-[0.98]"
@@ -378,7 +378,7 @@ export default function ReviewPage() {
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[70vh] gap-6">
           <div className="relative">
-            <Loader2 className="w-10 h-10 animate-spin text-amber-500 relative" />
+            <Loader2 className="w-10 h-10 animate-spin text-sky-600 relative" />
           </div>
           <div className="text-center space-y-1">
             <p className="text-gray-900 dark:text-white font-semibold font-sans tracking-wide">
@@ -415,10 +415,10 @@ export default function ReviewPage() {
 
           {/* Generated Review Card */}
           <div
-            className="w-full rounded-md border border-amber-200 dark:border-amber-900/40
-                        bg-amber-50 dark:bg-amber-950/20 p-5 md:p-6 space-y-3 shadow-sm"
+            className="w-full rounded-md border border-sky-200 dark:border-sky-900/40
+                        bg-sky-50 dark:bg-sky-950/20 p-5 md:p-6 space-y-3 shadow-sm"
           >
-            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500 text-xs md:text-sm font-semibold font-sans uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-sky-700 dark:text-sky-600 text-xs md:text-sm font-semibold font-sans uppercase tracking-wider">
               <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5" />
               Here is a draft for you
             </div>
@@ -432,7 +432,7 @@ export default function ReviewPage() {
             onClick={handleTryAnother}
             disabled={regenerating}
             className="flex items-center gap-1.5 text-sm md:text-base text-gray-500 dark:text-gray-400
-                       hover:text-amber-600 dark:hover:text-amber-400 transition-colors font-sans
+                       hover:text-sky-700 dark:hover:text-sky-500 transition-colors font-sans
                        disabled:opacity-50 font-medium py-2"
           >
             <RefreshCw className={`w-4 h-4 md:w-5 md:h-5 ${regenerating ? "animate-spin" : ""}`} />
@@ -444,7 +444,7 @@ export default function ReviewPage() {
             <a
               href={googleReviewUrl}
               className="flex-1 flex items-center justify-center gap-2 py-4 md:py-5 rounded-md
-                         bg-amber-400 hover:bg-amber-500 text-gray-900 font-bold text-base md:text-lg font-sans
+                         bg-sky-500 hover:bg-sky-600 text-gray-900 font-bold text-base md:text-lg font-sans
                          transition-all active:scale-[0.98] shadow-sm"
             >
               <svg viewBox="0 0 24 24" className="w-5 h-5 bg-white rounded-md p-0.5" fill="none">
@@ -472,7 +472,7 @@ export default function ReviewPage() {
               onClick={handleManualCopy}
               className={`flex flex-col items-center justify-center w-[72px] md:w-[84px] py-3 md:py-4 rounded-md transition-all active:scale-[0.98] border shadow-sm
                 ${copied 
-                  ? 'bg-amber-100 border-amber-200 text-amber-700 dark:bg-amber-900/40 dark:border-amber-800 dark:text-amber-400' 
+                  ? 'bg-sky-100 border-sky-200 text-amber-700 dark:bg-sky-900/40 dark:border-sky-800 dark:text-sky-500' 
                   : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-750'
                 }`}
               title="Copy to clipboard"
@@ -490,7 +490,7 @@ export default function ReviewPage() {
             <div className="w-px h-5 bg-gray-300 dark:bg-gray-600"></div>
             <button
               onClick={togglePause}
-              className="text-gray-500 hover:text-amber-600 dark:hover:text-amber-400 transition-colors p-1"
+              className="text-gray-500 hover:text-sky-700 dark:hover:text-sky-500 transition-colors p-1"
               title={isPaused ? "Resume" : "Pause"}
             >
               {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
@@ -516,8 +516,8 @@ export default function ReviewPage() {
     return (
       <Shell>
         <div className="flex flex-col items-center justify-center min-h-[70vh] gap-5">
-          <div className="w-16 h-16 rounded-md bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center">
-            <CheckCircle2 className="w-8 h-8 text-amber-500" />
+          <div className="w-16 h-16 rounded-md bg-sky-100 dark:bg-sky-900/20 flex items-center justify-center">
+            <CheckCircle2 className="w-8 h-8 text-sky-600" />
           </div>
           <div className="text-center space-y-2">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white font-sans tracking-wide">
@@ -581,7 +581,7 @@ function StarRow({
             <Star
               className={`${starSize} transition-colors duration-150 ${
                 active
-                  ? "fill-amber-400 text-amber-400"
+                  ? "fill-sky-500 text-sky-500"
                   : "fill-gray-100 text-gray-200 dark:fill-gray-800 dark:text-gray-700"
               }`}
             />

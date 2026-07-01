@@ -43,10 +43,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-200 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 bg-watermark text-gray-800 dark:text-gray-200 flex items-center justify-center px-4 relative overflow-hidden">
       {/* Background Glows */}
-      <div className="absolute top-[-10%] left-[-20%] w-[500px] h-[500px] rounded-full bg-rose-200/20 dark:bg-rose-900/10 blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-[10%] right-[-10%] w-[400px] h-[400px] rounded-full bg-amber-200/20 dark:bg-amber-900/10 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-20%] w-[500px] h-[500px] rounded-full bg-blue-200/20 dark:bg-blue-900/10 blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-[10%] right-[-10%] w-[400px] h-[400px] rounded-full bg-sky-200/20 dark:bg-sky-900/10 blur-[120px] pointer-events-none" />
 
       <div className="w-full max-w-sm space-y-4 relative z-10">
         <form
@@ -54,8 +54,8 @@ export default function LoginPage() {
           className="w-full space-y-5 bg-white dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-md p-8"
         >
           <div className="flex flex-col items-center gap-3">
-            <div className="w-14 h-14 rounded-md bg-gradient-to-br from-rose-100 to-amber-100 dark:from-rose-500/20 dark:to-amber-500/20 border border-rose-200 dark:border-rose-500/20 flex items-center justify-center">
-              <Lock className="w-6 h-6 text-rose-500" />
+            <div className="w-14 h-14 rounded-md bg-gradient-to-br from-blue-100 to-sky-100 dark:from-blue-600/20 dark:to-sky-600/20 border border-blue-200 dark:border-blue-600/20 flex items-center justify-center">
+              <Lock className="w-6 h-6 text-blue-600" />
             </div>
             <div className="text-center">
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">Client Login</h1>
@@ -106,9 +106,9 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading || !username || !password}
-            className="w-full py-3 rounded-md bg-rose-500 hover:bg-rose-600 text-white font-semibold
+            className="w-full py-3 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-semibold
                        text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed
-                       shadow-lg shadow-rose-500/15 hover:shadow-rose-500/25"
+                       shadow-lg shadow-blue-600/15 hover:shadow-blue-600/25"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin mx-auto" />
@@ -122,7 +122,7 @@ export default function LoginPage() {
             href="/api/contact-redirect?type=forgot"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1.5 text-xs text-gray-500 hover:text-rose-500 transition-colors"
+            className="flex items-center justify-center gap-1.5 text-xs text-gray-500 hover:text-blue-600 transition-colors"
           >
             <HelpCircle className="w-3.5 h-3.5" />
             Forgot username or password? Contact Admin
@@ -145,8 +145,8 @@ export default function LoginPage() {
           href="/api/contact-redirect?type=license"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50
-                     hover:bg-amber-100 dark:hover:bg-amber-900/40 text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 text-sm font-medium
+          className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800/50
+                     hover:bg-sky-100 dark:hover:bg-sky-900/40 text-amber-700 dark:text-sky-500 hover:text-sky-800 dark:hover:text-amber-300 text-sm font-medium
                      transition-all"
         >
           <MessageCircle className="w-4 h-4" />

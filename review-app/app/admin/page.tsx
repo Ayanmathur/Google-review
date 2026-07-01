@@ -197,7 +197,7 @@ function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
           autoFocus
           className="w-full px-4 py-3 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                      placeholder-gray-500 text-sm focus:outline-none focus:ring-2
-                     focus:ring-rose-400/40 focus:border-rose-400/40 transition-all"
+                     focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
         />
 
         {error && (
@@ -210,7 +210,7 @@ function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
         <button
           type="submit"
           disabled={loading || !password}
-          className="w-full py-3 rounded-md bg-rose-500 hover:bg-rose-600 text-gray-900 dark:text-white font-medium
+          className="w-full py-3 rounded-md bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-white font-medium
                      text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {loading ? (
@@ -406,7 +406,7 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
                   License Key — Share this with the client
                 </p>
                 <div className="flex items-center gap-3">
-                  <code className="flex-grow text-lg font-mono text-amber-400 tracking-wider">
+                  <code className="flex-grow text-lg font-mono text-sky-500 tracking-wider">
                     {generatedKey}
                   </code>
                   <button
@@ -512,7 +512,7 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 rounded-md bg-rose-500 hover:bg-rose-600 text-gray-900 dark:text-white font-medium
+                className="w-full py-3 rounded-md bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-white font-medium
                            text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {submitting ? (
@@ -572,6 +572,8 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
   const [editBusinessType, setEditBusinessType] = useState(client.business_type);
   const [editGooglePlaceId, setEditGooglePlaceId] = useState(client.google_place_id);
   const [editAbout, setEditAbout] = useState(client.about || '');
+  const [editUsername, setEditUsername] = useState(client.client_username || '');
+  const [editPassword, setEditPassword] = useState(client.client_password || '');
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -597,7 +599,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
       return { label: "Revoked", color: "text-red-400", bgColor: "bg-red-500/10 border-red-500/20" };
     }
     if (client.expires_at && new Date(client.expires_at) < new Date()) {
-      return { label: "Expired", color: "text-amber-400", bgColor: "bg-amber-500/10 border-amber-500/20" };
+      return { label: "Expired", color: "text-sky-500", bgColor: "bg-sky-600/10 border-sky-600/20" };
     }
     return { label: "Active", color: "text-emerald-400", bgColor: "bg-emerald-500/10 border-emerald-500/20" };
   };
@@ -680,6 +682,8 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
     setEditBusinessType(client.business_type);
     setEditGooglePlaceId(client.google_place_id);
     setEditAbout(client.about || '');
+    setEditUsername(client.client_username || '');
+    setEditPassword(client.client_password || '');
     setEditError("");
     setEditing(true);
   };
@@ -701,6 +705,8 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
         business_type: editBusinessType,
         google_place_id: editGooglePlaceId,
         about: editAbout,
+        client_username: editUsername || null,
+        client_password: editPassword || null,
       })
       .eq("id", client.id);
 
@@ -715,7 +721,12 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
   };
 
   const handleDelete = async () => {
+    if (!confirm("Are you sure you want to completely delete this client and all associated data? This cannot be undone.")) return;
     setDeleting(true);
+    // Delete scans (if no cascade)
+    await supabase.from("scans").delete().eq("client_id", client.id);
+    await supabase.from("negative_reviews").delete().eq("client_id", client.id);
+    
     const { error } = await supabase
       .from("clients")
       .delete()
@@ -823,6 +834,28 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
                 className="form-input resize-none"
               />
             </Field>
+            
+            <div className="pt-2 border-t border-gray-200 dark:border-gray-800">
+              <h4 className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wider">Client Login Credentials</h4>
+              <Field label="Username">
+                <input
+                  type="text"
+                  value={editUsername}
+                  onChange={(e) => setEditUsername(e.target.value)}
+                  className="form-input"
+                  placeholder="Optional"
+                />
+              </Field>
+              <Field label="Password">
+                <input
+                  type="text"
+                  value={editPassword}
+                  onChange={(e) => setEditPassword(e.target.value)}
+                  className="form-input"
+                  placeholder="Optional"
+                />
+              </Field>
+            </div>
 
             {editError && (
               <div className="flex items-center gap-2 text-red-400 text-sm">
@@ -835,7 +868,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
               <button
                 onClick={handleSaveEdit}
                 disabled={saving || !editName || !editSlug || !editBusinessType || !editGooglePlaceId}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-rose-500 hover:bg-rose-600
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700
                            text-gray-900 dark:text-white text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {saving ? (
@@ -852,6 +885,16 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
               >
                 <X className="w-3.5 h-3.5" />
                 Cancel
+              </button>
+              
+              <div className="flex-grow"></div>
+              
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 text-xs font-medium transition-colors disabled:opacity-40"
+              >
+                {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Delete"}
               </button>
             </div>
           </div>
@@ -886,7 +929,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
       {/* License Key Section */}
       <div className="bg-gray-100 dark:bg-gray-800/40 border border-gray-300 dark:border-gray-700/50 rounded-md p-4 space-y-3">
         <div className="flex items-center gap-2">
-          <KeyRound className="w-4 h-4 text-amber-400" />
+          <KeyRound className="w-4 h-4 text-sky-500" />
           <span className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
             License Key
           </span>
@@ -954,7 +997,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
               value={expiryDate}
               onChange={(e) => handleUpdateExpiry(e.target.value)}
               className="px-2 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-900/60 border border-gray-300 dark:border-gray-700/50 text-gray-700 dark:text-gray-300 text-xs
-                         focus:outline-none focus:ring-1 focus:ring-rose-400/40 transition-all
+                         focus:outline-none focus:ring-1 focus:ring-blue-500/40 transition-all
                          [color-scheme:dark]"
             />
             {updatingExpiry && <Loader2 className="w-3 h-3 animate-spin text-gray-500 dark:text-gray-500" />}
@@ -1130,7 +1173,7 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
                         key={i}
                         className={`w-3 h-3 ${
                           i < review.rating
-                            ? "fill-amber-400 text-amber-400"
+                            ? "fill-sky-500 text-sky-500"
                             : "text-gray-700"
                         }`}
                       />

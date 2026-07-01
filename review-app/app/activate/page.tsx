@@ -119,7 +119,7 @@ export default function ActivatePage() {
           <div
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
               step === "license"
-                ? "bg-rose-100 dark:bg-rose-500/20 text-rose-500 border border-blue-500/30"
+                ? "bg-blue-100 dark:bg-blue-600/20 text-blue-600 border border-blue-500/30"
                 : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
             }`}
           >
@@ -134,7 +134,7 @@ export default function ActivatePage() {
           <div
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
               step === "credentials"
-                ? "bg-rose-100 dark:bg-rose-500/20 text-rose-500 border border-blue-500/30"
+                ? "bg-blue-100 dark:bg-blue-600/20 text-blue-600 border border-blue-500/30"
                 : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-500 border border-gray-300 dark:border-gray-700"
             }`}
           >
@@ -149,8 +149,8 @@ export default function ActivatePage() {
             className="w-full space-y-5 bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-md p-8 backdrop-blur-sm"
           >
             <div className="flex flex-col items-center gap-3">
-              <div className="w-14 h-14 rounded-md bg-gradient-to-br from-rose-100 to-amber-100 dark:from-rose-500/20 dark:to-amber-500/20 border border-rose-200 dark:border-rose-500/20 flex items-center justify-center">
-                <KeyRound className="w-6 h-6 text-rose-500" />
+              <div className="w-14 h-14 rounded-md bg-gradient-to-br from-blue-100 to-sky-100 dark:from-blue-600/20 dark:to-sky-600/20 border border-blue-200 dark:border-blue-600/20 flex items-center justify-center">
+                <KeyRound className="w-6 h-6 text-blue-600" />
               </div>
               <div className="text-center">
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -175,7 +175,7 @@ export default function ActivatePage() {
                 required
                 className="w-full px-4 py-3 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                            placeholder-gray-500 text-sm font-mono tracking-wider text-center focus:outline-none focus:ring-2
-                           focus:ring-rose-400/40 focus:border-rose-400/40 transition-all uppercase"
+                           focus:ring-blue-500/40 focus:border-blue-500/40 transition-all uppercase"
               />
             </div>
 
@@ -189,9 +189,9 @@ export default function ActivatePage() {
             <button
               type="submit"
               disabled={licenseLoading || !licenseKey.trim()}
-              className="w-full py-3 rounded-md bg-rose-500 hover:bg-rose-600 text-gray-900 dark:text-white font-semibold
+              className="w-full py-3 rounded-md bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-white font-semibold
                          text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed
-                         shadow-lg shadow-rose-500/15 hover:shadow-rose-500/25"
+                         shadow-lg shadow-blue-600/15 hover:shadow-blue-600/25"
             >
               {licenseLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin mx-auto" />
@@ -206,8 +206,8 @@ export default function ActivatePage() {
             className="w-full space-y-5 bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-md p-8 backdrop-blur-sm"
           >
             <div className="flex flex-col items-center gap-3">
-              <div className="w-14 h-14 rounded-md bg-gradient-to-br from-rose-100 to-amber-100 dark:from-rose-500/20 dark:to-amber-500/20 border border-rose-200 dark:border-rose-500/20 flex items-center justify-center">
-                <User className="w-6 h-6 text-rose-500" />
+              <div className="w-14 h-14 rounded-md bg-gradient-to-br from-blue-100 to-sky-100 dark:from-blue-600/20 dark:to-sky-600/20 border border-blue-200 dark:border-blue-600/20 flex items-center justify-center">
+                <User className="w-6 h-6 text-blue-600" />
               </div>
               <div className="text-center">
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -236,7 +236,7 @@ export default function ActivatePage() {
                     minLength={3}
                     className="w-full pl-10 pr-4 py-3 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                                placeholder-gray-500 text-sm focus:outline-none focus:ring-2
-                               focus:ring-rose-400/40 focus:border-rose-400/40 transition-all"
+                               focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
                   />
                 </div>
               </div>
@@ -256,7 +256,7 @@ export default function ActivatePage() {
                     minLength={6}
                     className="w-full pl-10 pr-4 py-3 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                                placeholder-gray-500 text-sm focus:outline-none focus:ring-2
-                               focus:ring-rose-400/40 focus:border-rose-400/40 transition-all"
+                               focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
                   />
                 </div>
               </div>
@@ -276,7 +276,7 @@ export default function ActivatePage() {
                     minLength={6}
                     className="w-full pl-10 pr-4 py-3 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200
                                placeholder-gray-500 text-sm focus:outline-none focus:ring-2
-                               focus:ring-rose-400/40 focus:border-rose-400/40 transition-all"
+                               focus:ring-blue-500/40 focus:border-blue-500/40 transition-all"
                   />
                 </div>
               </div>
@@ -292,9 +292,9 @@ export default function ActivatePage() {
             <button
               type="submit"
               disabled={credLoading || !username || !password || !confirmPassword}
-              className="w-full py-3 rounded-md bg-rose-500 hover:bg-rose-600 text-gray-900 dark:text-white font-semibold
+              className="w-full py-3 rounded-md bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-white font-semibold
                          text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed
-                         shadow-lg shadow-rose-500/15 hover:shadow-rose-500/25"
+                         shadow-lg shadow-blue-600/15 hover:shadow-blue-600/25"
             >
               {credLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin mx-auto" />

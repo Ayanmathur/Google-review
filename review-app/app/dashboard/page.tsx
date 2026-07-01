@@ -14,6 +14,9 @@ import {
   QrCode,
   AlertCircle,
   Eye,
+  Settings,
+  Trash2,
+  Save,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -38,6 +41,14 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<Stats>({ total: 0, positive: 0, negative: 0 });
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [error, setError] = useState("");
+  
+  // Settings State
+  const [editUsername, setEditUsername] = useState("");
+  const [editPassword, setEditPassword] = useState("");
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [settingsMessage, setSettingsMessage] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  
   const qrRef = useRef<HTMLDivElement>(null);
 
   const reviewUrl =
@@ -73,7 +84,9 @@ export default function DashboardPage() {
       }
 
       setStats(data.stats);
-      setReviews(data.reviews);
+        setReviews(data.reviews);
+        // We could fetch current username/password here, but API doesn't return it for security.
+        // We'll just leave them blank, implying "type to update".
       setClientSlug(data.slug);
     } catch {
       setError("Failed to load dashboard data.");
@@ -123,7 +136,57 @@ export default function DashboardPage() {
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Feedback");
-    XLSX.writeFile(wb, `${clientSlug}-feedback.xlsx`);
+    XLSX.writeFile(wb, `${clientSlug}-negative-reviews.xlsx`);
+  };
+
+  const handleSaveSettings = async () => {
+    setSettingsMessage("");
+    setSavingSettings(true);
+    const clientId = localStorage.getItem("client_id");
+
+    try {
+      const res = await fetch("/api/client-settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId, username: editUsername, password: editPassword }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSettingsMessage("Settings updated successfully.");
+        setEditUsername("");
+        setEditPassword("");
+      } else {
+        setSettingsMessage(data.error || "Failed to update settings.");
+      }
+    } catch {
+      setSettingsMessage("Network error.");
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirm("Are you absolutely sure you want to delete your account? This action cannot be undone.")) return;
+    setDeleting(true);
+    const clientId = localStorage.getItem("client_id");
+
+    try {
+      const res = await fetch("/api/client-settings", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        handleLogout();
+      } else {
+        alert(data.error || "Failed to delete account.");
+      }
+    } catch {
+      alert("Network error.");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) {
@@ -146,7 +209,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-200">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 bg-watermark text-gray-800 dark:text-gray-200 relative overflow-hidden">
       {/* Background Glows */}
       <div className="absolute top-[-5%] left-[-15%] w-[500px] h-[500px] rounded-full bg-blue-900/8 blur-[150px] pointer-events-none" />
       <div className="absolute bottom-[20%] right-[-10%] w-[400px] h-[400px] rounded-full bg-indigo-900/8 blur-[120px] pointer-events-none" />
@@ -203,7 +266,7 @@ export default function DashboardPage() {
         {/* QR Code Section */}
         <div className="bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-md p-6 backdrop-blur-sm">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
-            <QrCode className="w-5 h-5 text-rose-500" />
+            <QrCode className="w-5 h-5 text-blue-600" />
             Your Review QR Code
           </h2>
           <div className="flex items-center gap-6">
@@ -220,7 +283,7 @@ export default function DashboardPage() {
               </p>
               <button
                 onClick={handleDownloadQR}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-rose-500 hover:bg-rose-600
+                className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-blue-600 hover:bg-blue-700
                            text-gray-900 dark:text-white text-sm font-medium transition-all
                            shadow-[0_0_15px_rgba(37,99,235,0.15)] hover:shadow-[0_0_20px_rgba(37,99,235,0.3)]"
               >
@@ -235,7 +298,7 @@ export default function DashboardPage() {
         <div className="bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-md p-6 backdrop-blur-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-amber-400" />
+              <MessageSquare className="w-5 h-5 text-sky-500" />
               Customer Feedback
               <span className="text-sm font-normal text-gray-500 dark:text-gray-500">
                 ({reviews.length})
@@ -299,7 +362,7 @@ export default function DashboardPage() {
                               key={i}
                               className={`w-3.5 h-3.5 ${
                                 i < review.rating
-                                  ? "fill-amber-400 text-amber-400"
+                                  ? "fill-sky-500 text-sky-500"
                                   : "text-gray-700"
                               }`}
                             />
@@ -320,6 +383,67 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
+        
+        {/* Account Settings Section */}
+        <div className="bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-md p-6 backdrop-blur-sm">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
+            <Settings className="w-5 h-5 text-gray-500" />
+            Account Settings
+          </h2>
+          <div className="space-y-4 max-w-sm">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                Update Username
+              </label>
+              <input
+                type="text"
+                value={editUsername}
+                onChange={(e) => setEditUsername(e.target.value)}
+                placeholder="New username"
+                className="form-input"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                Update Password
+              </label>
+              <input
+                type="password"
+                value={editPassword}
+                onChange={(e) => setEditPassword(e.target.value)}
+                placeholder="New password"
+                className="form-input"
+              />
+            </div>
+            {settingsMessage && (
+              <p className={`text-sm ${settingsMessage.includes('success') ? 'text-green-500' : 'text-red-500'}`}>
+                {settingsMessage}
+              </p>
+            )}
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                onClick={handleSaveSettings}
+                disabled={savingSettings || (!editUsername && !editPassword)}
+                className="flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-semibold text-sm transition-all disabled:opacity-50"
+              >
+                {savingSettings ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                Save Changes
+              </button>
+            </div>
+            
+            <div className="pt-6 mt-6 border-t border-gray-200 dark:border-gray-800">
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleting}
+                className="flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 text-sm font-semibold transition-all disabled:opacity-50"
+              >
+                {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                Delete Account
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
