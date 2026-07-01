@@ -7,6 +7,16 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || 'dummy'
 );
 
+function getErrorMessage(error: unknown): string {
+  if (error && typeof error === 'object') {
+    const e = error as Record<string, unknown>;
+    if (typeof e.message === 'string') return e.message;
+    if (typeof e.error_description === 'string') return e.error_description;
+    try { return JSON.stringify(error); } catch { return String(error); }
+  }
+  return String(error);
+}
+
 export async function GET() {
   try {
     const { data, error } = await supabase
@@ -14,10 +24,10 @@ export async function GET() {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) return NextResponse.json({ error: error.message || 'Failed to fetch clients' }, { status: 500 });
     return NextResponse.json({ clients: data });
   } catch (error: unknown) {
-    return NextResponse.json({ error: typeof error === 'object' && error !== null && 'message' in error ? String((error as Record<string, unknown>).message) : String(error) }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -33,12 +43,14 @@ export async function POST(req: Request) {
       google_place_id,
       license_key,
       about,
+      is_active: true,
+      is_activated: false,
     });
 
-    if (error) throw error;
+    if (error) return NextResponse.json({ error: error.message || 'Failed to add client' }, { status: 500 });
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    return NextResponse.json({ error: typeof error === 'object' && error !== null && 'message' in error ? String((error as Record<string, unknown>).message) : String(error) }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -54,10 +66,10 @@ export async function PUT(req: Request) {
       .update(updates)
       .eq('id', id);
 
-    if (error) throw error;
+    if (error) return NextResponse.json({ error: error.message || 'Failed to update client' }, { status: 500 });
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    return NextResponse.json({ error: typeof error === 'object' && error !== null && 'message' in error ? String((error as Record<string, unknown>).message) : String(error) }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -68,7 +80,6 @@ export async function DELETE(req: Request) {
 
     if (!id) return NextResponse.json({ error: 'Missing client id' }, { status: 400 });
 
-    // Explicitly delete related records if not relying on ON DELETE CASCADE
     await supabase.from('scans').delete().eq('client_id', id);
     await supabase.from('negative_reviews').delete().eq('client_id', id);
 
@@ -77,9 +88,9 @@ export async function DELETE(req: Request) {
       .delete()
       .eq('id', id);
 
-    if (error) throw error;
+    if (error) return NextResponse.json({ error: error.message || 'Failed to delete client' }, { status: 500 });
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    return NextResponse.json({ error: typeof error === 'object' && error !== null && 'message' in error ? String((error as Record<string, unknown>).message) : String(error) }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }

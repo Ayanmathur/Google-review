@@ -351,7 +351,7 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
       const data = await res.json();
 
       if (data.error) {
-        setError(data.error);
+        setError(typeof data.error === 'string' ? data.error : JSON.stringify(data.error));
       } else {
         setSuccess(true);
         setGeneratedKey(licenseKey);
