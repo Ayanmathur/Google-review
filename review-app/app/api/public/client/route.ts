@@ -22,6 +22,6 @@ export async function POST(req: Request) {
     if (error) throw error;
     return NextResponse.json({ client: data });
   } catch (error: unknown) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 });
+    return NextResponse.json({ error: typeof error === 'object' && error !== null && 'message' in error ? String((error as Record<string, unknown>).message) : String(error) }, { status: 500 });
   }
 }
