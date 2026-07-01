@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { supabase } from "@/lib/supabase";
 import { Star, Loader2, CheckCircle2, AlertCircle, RefreshCw, Copy, Pause, Play } from "lucide-react";
 
 interface Client {
@@ -61,30 +60,34 @@ export default function ReviewPage() {
   // ─── Fetch Client & Log Scan ───
   useEffect(() => {
     async function loadClient() {
-      const { data, error } = await supabase
-        .from("clients")
-        .select("*")
-        .eq("slug", slug)
-        .eq("is_active", true)
-        .single();
+      try {
+        const res = await fetch("/api/public/client", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug }),
+        });
+        const data = await res.json();
 
-      if (error || !data) {
+        if (data.error || !data.client || !data.client.is_active) {
+          setPhase("invalid");
+          return;
+        }
+
+        setClient(data.client);
+        setPhase("rating");
+
+        // Log scan
+        const scanRes = await fetch("/api/public/scan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ client_id: data.client.id }),
+        });
+        const scanData = await scanRes.json();
+        if (scanData.success && scanData.id) {
+          scanIdRef.current = scanData.id;
+        }
+      } catch {
         setPhase("invalid");
-        return;
-      }
-
-      setClient(data);
-      setPhase("rating");
-
-      // Log scan
-      const { data: scanData } = await supabase
-        .from("scans")
-        .insert({ client_id: data.id })
-        .select("id")
-        .single();
-
-      if (scanData) {
-        scanIdRef.current = scanData.id;
       }
     }
     loadClient();
@@ -92,10 +95,11 @@ export default function ReviewPage() {
 
   const updateScanRating = async (rating: number) => {
     if (scanIdRef.current) {
-      await supabase
-        .from("scans")
-        .update({ rating_given: rating })
-        .eq("id", scanIdRef.current);
+      await fetch("/api/public/scan", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: scanIdRef.current, rating_given: rating }),
+      });
     }
   };
 
@@ -242,10 +246,14 @@ export default function ReviewPage() {
     setSubmitting(true);
 
     try {
-      await supabase.from("negative_reviews").insert({
-        client_id: client.id,
-        rating: selectedRating,
-        feedback: feedback || null,
+      await fetch("/api/public/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: client.id,
+          rating: selectedRating,
+          feedback: feedback || null,
+        }),
       });
 
       await updateScanRating(selectedRating);

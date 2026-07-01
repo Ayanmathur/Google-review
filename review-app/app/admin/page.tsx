@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+// import { supabase } from "@/lib/supabase";
 import { QRCodeCanvas } from "qrcode.react";
 import {
   Lock,
@@ -233,13 +233,19 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [loadingClients, setLoadingClients] = useState(true);
 
   const fetchClients = useCallback(async () => {
-    const { data } = await supabase
-      .from("clients")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    setClients((data as Client[]) || []);
-    setLoadingClients(false);
+    try {
+      const res = await fetch("/api/admin-clients");
+      const data = await res.json();
+      if (data.error) {
+        setClients([]);
+      } else {
+        setClients(data.clients || []);
+      }
+    } catch {
+      setClients([]);
+    } finally {
+      setLoadingClients(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -329,28 +335,35 @@ function AddClientForm({ onClientAdded }: { onClientAdded: () => void }) {
 
     const licenseKey = generateLicenseKey();
 
-    const { error: insertError } = await supabase.from("clients").insert({
-      name,
-      slug,
-      business_type: businessType,
-      google_place_id: googlePlaceId,
-      about,
-      license_key: licenseKey,
-      is_active: true,
-      is_activated: false,
-    });
+    try {
+      const res = await fetch("/api/admin-clients", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          slug,
+          business_type: businessType,
+          google_place_id: googlePlaceId,
+          about,
+          license_key: licenseKey,
+        }),
+      });
+      const data = await res.json();
 
-    if (insertError) {
-      setError(insertError.message);
-    } else {
-      setSuccess(true);
-      setGeneratedKey(licenseKey);
-      setName("");
-      setSlug("");
-      setBusinessType("");
-      setGooglePlaceId("");
-      setAbout('');
-      onClientAdded();
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setSuccess(true);
+        setGeneratedKey(licenseKey);
+        setName("");
+        setSlug("");
+        setBusinessType("");
+        setGooglePlaceId("");
+        setAbout('');
+        onClientAdded();
+      }
+    } catch {
+      setError("Network error adding client");
     }
 
     setSubmitting(false);
@@ -560,7 +573,6 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
   });
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedback, setFeedback] = useState<NegativeReview[]>([]);
-  const [feedbackLoaded, setFeedbackLoaded] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [keyCopied, setKeyCopied] = useState(false);
   const qrRef = useRef<HTMLDivElement>(null);
@@ -609,20 +621,21 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
   // Fetch stats
   useEffect(() => {
     async function loadStats() {
-      const { data } = await supabase
-        .from("scans")
-        .select("rating_given")
-        .eq("client_id", client.id);
-
-      if (data) {
-        const total = data.length;
-        const positive = data.filter(
-          (s) => s.rating_given !== null && s.rating_given >= 4
-        ).length;
-        const negative = data.filter(
-          (s) => s.rating_given !== null && s.rating_given <= 3
-        ).length;
-        setStats({ total, positive, negative });
+      try {
+        const res = await fetch("/api/client-data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ clientId: client.id }),
+        });
+        const data = await res.json();
+        if (data.stats) {
+          setStats(data.stats);
+          if (data.reviews) {
+            setFeedback(data.reviews);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch stats", err);
       }
     }
 
@@ -631,16 +644,6 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
 
   // Fetch negative reviews on toggle
   const toggleFeedback = async () => {
-    if (!feedbackOpen && !feedbackLoaded) {
-      const { data } = await supabase
-        .from("negative_reviews")
-        .select("*")
-        .eq("client_id", client.id)
-        .order("created_at", { ascending: false });
-
-      setFeedback((data as NegativeReview[]) || []);
-      setFeedbackLoaded(true);
-    }
     setFeedbackOpen(!feedbackOpen);
   };
 
@@ -697,24 +700,31 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
     setEditError("");
     setSaving(true);
 
-    const { error } = await supabase
-      .from("clients")
-      .update({
-        name: editName,
-        slug: editSlug,
-        business_type: editBusinessType,
-        google_place_id: editGooglePlaceId,
-        about: editAbout,
-        client_username: editUsername || null,
-        client_password: editPassword || null,
-      })
-      .eq("id", client.id);
-
-    if (error) {
-      setEditError(error.message);
-    } else {
-      setEditing(false);
-      onClientUpdated();
+    try {
+      const res = await fetch("/api/admin-clients", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: client.id,
+          name: editName,
+          slug: editSlug,
+          business_type: editBusinessType,
+          google_place_id: editGooglePlaceId,
+          about: editAbout,
+          client_username: editUsername || null,
+          client_password: editPassword || null,
+        }),
+      });
+      const data = await res.json();
+      
+      if (data.error) {
+        setEditError(data.error);
+      } else {
+        setEditing(false);
+        onClientUpdated();
+      }
+    } catch {
+      setEditError("Failed to update client");
     }
 
     setSaving(false);
@@ -723,20 +733,20 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to completely delete this client and all associated data? This cannot be undone.")) return;
     setDeleting(true);
-    // Delete scans (if no cascade)
-    await supabase.from("scans").delete().eq("client_id", client.id);
-    await supabase.from("negative_reviews").delete().eq("client_id", client.id);
     
-    const { error } = await supabase
-      .from("clients")
-      .delete()
-      .eq("id", client.id);
-
-    if (error) {
-      setEditError(error.message);
+    try {
+      const res = await fetch(`/api/admin-clients?id=${client.id}`, { method: "DELETE" });
+      const data = await res.json();
+      
+      if (data.error) {
+        setEditError(data.error);
+        setDeleting(false);
+      } else {
+        onClientUpdated();
+      }
+    } catch {
+      setEditError("Network error deleting client");
       setDeleting(false);
-    } else {
-      onClientUpdated();
     }
   };
 
@@ -744,12 +754,13 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
 
   const handleToggleRevoke = async () => {
     setRevoking(true);
-    const { error } = await supabase
-      .from("clients")
-      .update({ is_active: !client.is_active })
-      .eq("id", client.id);
-
-    if (!error) {
+    const res = await fetch("/api/admin-clients", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: client.id, is_active: !client.is_active }),
+    });
+    const data = await res.json();
+    if (!data.error) {
       onClientUpdated();
     }
     setRevoking(false);
@@ -759,12 +770,14 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
     setRegenerating(true);
     const newKey = generateLicenseKey();
 
-    const { error } = await supabase
-      .from("clients")
-      .update({ license_key: newKey, is_activated: false, client_username: null, client_password: null })
-      .eq("id", client.id);
-
-    if (!error) {
+    const res = await fetch("/api/admin-clients", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: client.id, license_key: newKey, is_activated: false, client_username: null, client_password: null }),
+    });
+    const data = await res.json();
+    
+    if (!data.error) {
       setNewKeyShown(newKey);
       onClientUpdated();
     }
@@ -777,12 +790,14 @@ function ClientCard({ client, onClientUpdated }: { client: Client; onClientUpdat
 
     const expiresAt = dateStr ? new Date(dateStr + "T23:59:59Z").toISOString() : null;
 
-    const { error } = await supabase
-      .from("clients")
-      .update({ expires_at: expiresAt })
-      .eq("id", client.id);
+    const res = await fetch("/api/admin-clients", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: client.id, expires_at: expiresAt }),
+    });
+    const data = await res.json();
 
-    if (!error) {
+    if (!data.error) {
       onClientUpdated();
     }
     setUpdatingExpiry(false);

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
       }
     });
 
-    const reviewText = response.text?.trim() || '';
+    const reviewText = response.text?.trim() || 'dummy';
 
     if (!reviewText || reviewText.length < 30) {
       throw new Error('Review too short or empty');
